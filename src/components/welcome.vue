@@ -12,13 +12,20 @@ import { ref, onMounted } from 'vue';
 const welcomeText = ref('');
 const welcomeWillShow = 'Welcome to ZinWaa World!';
 const welcomeShow = ref(true);
-setTimeout(() => {
+onMounted(() => {
     const welcomeDom = document.querySelector('.wrapper') as HTMLDivElement;
-    welcomeDom.style.opacity = '0';
+    const icon = welcomeDom.children[0] as HTMLSpanElement;
+    const welcomeTextDom = welcomeDom.children[2] as HTMLSpanElement;
     setTimeout(() => {
-        welcomeShow.value = false;
-    }, 500);
-}, 3000);
+        welcomeDom.style.opacity = '0';
+        setTimeout(() => {
+            welcomeShow.value = false;
+        }, 500);
+    }, 3000);
+    let fontSize = Number(window.getComputedStyle(welcomeTextDom).fontSize.replace('px', '')) * 0.585;
+    welcomeTextDom.style.width = fontSize * welcomeWillShow.length + 'px';
+})
+
 
 //模拟 /chat 的数据
 /**
@@ -46,12 +53,6 @@ const addTxt = function (context: string) {
     }
 }
 addTxt(welcomeWillShow);
-console.log(welcomeWillShow.length);
-onMounted(() => {
-    const welcomeDom = document.querySelector('.wrapper')?.children[2] as HTMLSpanElement;
-    let fontSize = Number(window.getComputedStyle(welcomeDom).fontSize.replace('px', '')) * 0.585;
-    welcomeDom.style.width = fontSize * welcomeWillShow.length + 'px';
-})
 
 </script>
 
@@ -98,5 +99,6 @@ onMounted(() => {
                 }
             }
         }
+
     }
 }</style>
