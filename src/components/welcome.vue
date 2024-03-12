@@ -82,7 +82,7 @@ addTxt(welcomeWillShow);
 
         img {
             width: 5vw;
-            top: 1vw;
+            top: 0.7vw;
             position: relative;
             transition: all 0.5s;
             animation: show 1s forwards;

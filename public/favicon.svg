@@ -1,13 +1,13 @@
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="500"
-      height="500" viewBox="0 0 500 500" xml:space="preserve">
-      <g transform="matrix(1.8965249767 0 0 1.8965249767 250.2844141069 250.2844141069)" id="Daf_E8dunbFk_FM4jMatw">
-        <path
-          style="stroke:white;stroke-width: 60; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; stroke: white;fill-rule: nonzero; opacity: 0.85;filter: url(#SVGID_286);"
-          transform=" translate(0, 0)" d="M -80 -80 L 80 -80 L -80 80 L 80 80" stroke-linecap="round" />
-        <filter id="SVGID_286" y="-22.5%" height="145%" x="-26.25%" width="152.5%">
-        </filter>
-        <path
-          style="stroke: rgb(24,171,248); stroke-width: 60; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-opacity: 0; fill-rule: nonzero; opacity: 0.85;"
-          transform=" translate(0, 0)" d="M -80 -80 L 80 -80 L -80 80 L 80 80" stroke-linecap="round" />
-      </g>
-    </svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="500"
+  height="500" viewBox="0 0 500 500" xml:space="preserve">
+  <g transform="matrix(1.8965249767 0 0 1.8965249767 250.2844141069 250.2844141069)" id="Daf_E8dunbFk_FM4jMatw">
+    <path
+      style="stroke:white;stroke-width: 60; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; stroke: white;fill-rule: nonzero; opacity: 0.85;filter: url(#SVGID_286);"
+      transform=" translate(0, 0)" d="M -80 -80 L 80 -80 L -80 80 L 80 80" stroke-linecap="round" />
+    <filter id="SVGID_286" y="-22.5%" height="145%" x="-26.25%" width="152.5%">
+    </filter>
+    <path
+      style="stroke: rgb(24,171,248); stroke-width: 60; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-opacity: 0; fill-rule: nonzero; opacity: 0.85;"
+      transform=" translate(0, 0)" d="M -80 -80 L 80 -80 L -80 80 L 80 80" stroke-linecap="round" />
+  </g>
+</svg>
