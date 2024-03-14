@@ -21,14 +21,26 @@ let pages = [
           asideMenu: false
         }
       }, {
-        path: '/user',
-        name: 'user',
+        path: '/sqlCreate',
+        name: 'sqlCreate',
         component: () => import('@/views/sqlCreatePage.vue'),
         meta: {
           title: 'SQL语句生成器',
           headMenu: true,
           asideMenu: false
-        }
+        },
+        children: [
+          {
+            path: '/sqlCreate',
+            name: 'sqlCreate',
+            component: () => import('@/views/sqlCreatePage.vue'),
+            meta: {
+              title: 'SQL语句生成器',
+              headMenu: true,
+              asideMenu: false
+            }
+          },
+        ]
       }
     ]
   }
