@@ -16,8 +16,8 @@
                 <div class="content">
                     <div class="inputBtn">
                         <a-space>
-                            <a-button type="outline">智能输入</a-button>
-                            <a-button type="outline">导入多条字段</a-button>
+                            <a-button type="outline" @click="intelligentInputClick">智能输入</a-button>
+                            <!-- <a-button type="outline">导入多条字段</a-button> -->
                         </a-space>
                     </div>
                     <div class="inputForm">
@@ -70,8 +70,33 @@
                                                         <template #label>
                                                             <span class="label">字段类型</span>
                                                         </template>
-                                                        <a-input v-model="item.type" placeholder="请输入字段类型"
-                                                            class="inputBox" />
+                                                        <a-select :style="{ width: '320px' }" placeholder="请输入字段类型"
+                                                            style="background-color: #fff;" allow-search
+                                                            v-model="item.type" class="inputBox">
+                                                            <a-option>TINYINT</a-option>
+                                                            <a-option>SMALLINT</a-option>
+                                                            <a-option>MEDIUMINT</a-option>
+                                                            <a-option>INT</a-option>
+                                                            <a-option>BIGINT</a-option>
+                                                            <a-option>FLOAT</a-option>
+                                                            <a-option>DOUBLE</a-option>
+                                                            <a-option>DECIMAL</a-option>
+                                                            <a-option>DATE</a-option>
+                                                            <a-option>TIME</a-option>
+                                                            <a-option>DATETIME</a-option>
+                                                            <a-option>TIMESTAMP</a-option>
+                                                            <a-option>YEAR</a-option>
+                                                            <a-option>TINYTEXT</a-option>
+                                                            <a-option>TEXT</a-option>
+                                                            <a-option>MEDIUMTEXT</a-option>
+                                                            <a-option>LONGTEXT</a-option>
+                                                            <a-option>TINYBLOB</a-option>
+                                                            <a-option>BLOB</a-option>
+                                                            <a-option>MEDIUMBLOB</a-option>
+                                                            <a-option>LONGBLOB</a-option>
+                                                            <a-option>ENUM</a-option>
+                                                            <a-option>SET</a-option>
+                                                        </a-select>
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="9">
@@ -100,8 +125,11 @@
                                                         <template #label>
                                                             <span class="label">onUpdate</span>
                                                         </template>
-                                                        <a-input v-model="item.onUpdate" placeholder="字段更新动作"
-                                                            class="inputBox" />
+                                                        <a-select placeholder="字段更新动作" allow-clear
+                                                            v-model="item.onUpdate" class="inputBox"
+                                                            style="background-color: #fff;">
+                                                            <a-option>CURRENT_TIMESTAMP</a-option>
+                                                        </a-select>
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="4">
@@ -159,6 +187,30 @@
                 </div>
             </div>
         </div>
+        <div>
+            <a-modal v-model:visible="intelligentInputVisible" :title-align="'start'" class="windows" :footer="false">
+                <template #title style="margin: 0;">
+                    <span class="title" style="margin: 20px 0;display: block;"> 智能输入 </span>
+                </template>
+                <div class="content">
+                    <span style="margin-bottom: 5px;display: block;">输入多个字段名称，请用【中文或英文逗号】分开:</span>
+                    <a-form :model="windowsData" @submit="intelligentInputOk"
+                        :wrapper-col-props="{ span: 24, offset: -2 }">
+                        <a-form-item hide-asterisk :rules="[{ required: true, message: '不能为空' }]"
+                            field="intelligentInput">
+                            <a-textarea placeholder="输入多个字段名称，请用【中文或英文逗号】分开" :allow-clear="false"
+                                :auto-size="{ minRows: 18, maxRows: 18 }" v-model="windowsData.intelligentInput" />
+                        </a-form-item>
+
+                        <div class="inputBox"
+                            style="display: flex;justify-content: flex-end;gap: 10px;margin-top: 20px;">
+                            <a-button type="outline" html-type="reset">重置</a-button>
+                            <a-button type="primary" html-type="submit" style="width: 100px;">导入</a-button>
+                        </div>
+                    </a-form>
+                </div>
+            </a-modal>
+        </div>
     </div>
 </template>
 
@@ -167,6 +219,8 @@
 import type { ValidatedError } from '@arco-design/web-vue';
 import { Message } from '@arco-design/web-vue';
 import { onMounted, reactive, ref } from 'vue';
+
+//--------------------------------------------数据部分--------------------------------------------
 interface Form {
     databaseName: string;
     tableName: string;
@@ -188,7 +242,7 @@ const form = reactive<Form>({
     tableComments: '',
     tableFields: [
         {
-            name: '',
+            name: 'test_field',
             type: '',
             defaultValue: '',
             comment: '',
@@ -200,6 +254,10 @@ const form = reactive<Form>({
     ]
 })
 const result = ref<{ value: string } | null>(null)
+const resultType = ref<'mysql' | 'sqlServer' | 'oracle'>('mysql')
+
+
+//--------------------------------------------公共功能--------------------------------------------
 const symbol = (n: number) => Symbol(n)
 
 //监听窗口变化
@@ -231,6 +289,97 @@ const tips = (status: 'success' | 'warning', message = '') => {
     }
 }
 
+
+
+//--------------------------------------------表单功能--------------------------------------------
+//展开的字段面板发生改变时触发
+const collapseActive = reactive<number[]>([])
+const collapseChange = (key: number) => {
+    if (collapseActive.includes(key)) {
+        collapseActive.splice(collapseActive.indexOf(key), 1);
+    } else {
+        collapseActive.push(key)
+    }
+}
+
+//表单提交
+const onSubmit = (data: {
+    values: Record<string, any>;
+    errors: Record<string, ValidatedError> | undefined;
+}): any => {
+    if (data.errors) { tips('warning'); return }
+    if (data.values.tableFields.length === 0) { tips('warning', '请至少添加一条字段'); return }
+
+    tips('success');
+    result.value = { value: generateMySQLCreateTableStatement(data.values as Form) };
+}
+//添加字段
+const addField = () => {
+    form.tableFields.push({
+        name: 'test_field',
+        type: '',
+        defaultValue: '',
+        comment: '',
+        onUpdate: '',
+        isPrimary: true,
+        notNull: false,
+        isAutoIncrement: true,
+    })
+}
+
+//删除字段
+const removeField = (key: number) => {
+    form.tableFields.splice(key, 1)
+    collapseActive.forEach((item, index) => {
+        if (item === key) {
+            collapseActive.splice(index, 1);
+        }
+        if (item > key) {
+            collapseActive[index] = item - 1;
+        }
+    });
+}
+
+//--------------------------------------------窗口功能--------------------------------------------
+const intelligentInputVisible = ref(false);
+const windowsData = reactive({
+    intelligentInput: '',
+})
+const intelligentInputClick = () => {
+    intelligentInputVisible.value = true;
+};
+const intelligentInputOk = (data: {
+    values: Record<string, any>;
+    errors: Record<string, ValidatedError> | undefined;
+}): any => {
+    if (data.errors) return
+    const str: string = data.values.intelligentInput;
+    form.tableFields = [];
+    str.split(/[,，]/g).forEach((item) => {
+        if (item.trim() !== '') {
+            form.tableFields.push({
+                name: item.trim(),
+                type: '',
+                defaultValue: '',
+                comment: '',
+                onUpdate: '',
+                isPrimary: false,
+                notNull: false,
+                isAutoIncrement: false,
+            })
+        }
+    })
+    if (form.tableFields.length === 0) {
+        tips('warning', '请至少添加一条字段');
+        return;
+    }
+    tips('success');
+    intelligentInputVisible.value = false;
+}
+
+
+
+//--------------------------------------------生成数据--------------------------------------------
 //生成myysql语句
 const generateMySQLCreateTableStatement = (form: Form) => {
     const fieldDefinitions = form.tableFields.map(field => {
@@ -265,62 +414,12 @@ const generateMySQLCreateTableStatement = (form: Form) => {
 
     const columnsClause = fieldDefinitions.join(',\n  ');
 
-    const tableCommentsClause = form.tableComments ? `\nCOMMENT '${form.tableComments.replace(/'/g, "\\'")}'` : '';
+    const tableCommentsClause = form.tableComments ? `COMMENT '${form.tableComments.replace(/'/g, "\\'")}'` : '';
     const tableHeaderClause = form.databaseName ? `CREATE TABLE IF NOT EXISTS \`${form.databaseName}\`.\`${form.tableName}\`` : `CREATE TABLE IF NOT EXISTS \`${form.tableName}\``;
     return `${tableHeaderClause} (
   ${columnsClause}
-)${tableCommentsClause};`.trim();
+) ${tableCommentsClause};`.trim();
 };
-
-
-//展开的字段面板发生改变时触发
-const collapseActive = reactive<number[]>([])
-const collapseChange = (key: number) => {
-    if (collapseActive.includes(key)) {
-        collapseActive.splice(collapseActive.indexOf(key), 1);
-    } else {
-        collapseActive.push(key)
-    }
-}
-
-//表单提交
-const onSubmit = (data: {
-    values: Record<string, any>;
-    errors: Record<string, ValidatedError> | undefined;
-}): any => {
-    if (data.errors) { tips('warning'); return }
-    if (data.values.tableFields.length === 0) { tips('warning', '请至少添加一条字段'); return }
-
-    tips('success');
-    result.value = { value: generateMySQLCreateTableStatement(data.values as Form) };
-}
-//添加字段
-const addField = () => {
-    form.tableFields.push({
-        name: '',
-        type: '',
-        defaultValue: '',
-        comment: '',
-        onUpdate: '',
-        isPrimary: true,
-        notNull: false,
-        isAutoIncrement: true,
-    })
-}
-
-//删除字段
-const removeField = (key: number) => {
-    form.tableFields.splice(key, 1)
-    collapseActive.forEach((item, index) => {
-        if (item === key) {
-            collapseActive.splice(index, 1);
-        }
-        if (item > key) {
-            collapseActive[index] = item - 1;
-        }
-    });
-}
-
 //复制SQL语句
 const sqlPre = ref<HTMLPreElement | null>(null);
 onMounted(() => {
@@ -334,10 +433,12 @@ async function copySQL() {
     if (sqlPre.value) {
         try {
             await navigator.clipboard.writeText(sqlPre.value.innerText);
-            console.log('SQL 语句已复制到剪贴板');
+            tips('success', 'SQL 语句已复制到剪贴板')
         } catch (err) {
-            console.error('复制操作失败', err);
+            tips('warning', '复制操作失败')
         }
+    } else {
+        tips('warning', '请先生成语句')
     }
 }
 
@@ -363,6 +464,7 @@ async function copySQL() {
             background-color: #fff;
             border-radius: 4px;
             min-width: 580px;
+            box-shadow: #ccc 0 0 8px 4px;
 
             .title {
                 padding: 20px 30px;
