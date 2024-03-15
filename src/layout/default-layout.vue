@@ -59,14 +59,6 @@ export default defineComponent({
     }
 })
 </script>
-<script setup lang="ts">
-const menuDom = ref<null | HTMLDivElement>(null)
-onMounted(() => {
-    const menu = menuDom.value as HTMLDivElement
-
-    console.log(menu);
-})
-</script>
 <style scoped lang="less">
 .menu-demo {
     z-index: 100;

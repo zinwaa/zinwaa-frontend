@@ -21,14 +21,16 @@
                         </a-space>
                     </div>
                     <div class="inputForm">
-                        <a-form :model="form" :label-align="'left'" :label-col-props="{ span: 3, offset: 1 }">
+                        <a-form :model="form" :label-align="'left'" :label-col-props="{ span: 3, offset: 1 }"
+                            @submit="onSubmit">
                             <a-form-item field="databaseName" validate-trigger="input">
                                 <template #label>
                                     <span class="label">库名</span>
                                 </template>
                                 <a-input v-model="form.databaseName" placeholder="多个单词建议用下划线分割" />
                             </a-form-item>
-                            <a-form-item field="tableName" validate-trigger="input" required>
+                            <a-form-item field="tableName" validate-trigger="input" name="tableName"
+                                :rules="[{ required: true, message: '请输入表名' }]">
                                 <template #label>
                                     <span class="label">表名</span>
                                 </template>
@@ -42,28 +44,29 @@
                             </a-form-item>
                             <div v-for="item, i in form.tableFields" :key="symbol(i)" class="fieldCard"
                                 style="margin-bottom: 10px;">
-                                <a-collapse>
-                                    <a-collapse-item key="1">
+                                <a-collapse :default-active-key="collapseActive" @change="collapseChange(i)">
+                                    <a-collapse-item :key="i">
                                         <template #header>
-                                            <a-form-item field="tableComments" validate-trigger="input"
-                                                @click.prevent="" :label-col-style="{ width: '60px' }"
-                                                class="fieldTitle" @click.stop="">
+                                            <a-form-item :label-col-style="{ width: '60px' }" class="fieldTitle"
+                                                hide-asterisk :rules="[{ required: true, message: '请输入字段名' }]"
+                                                :field="`tableFields[${i}].name`">
                                                 <template #label>
                                                     <span style="display: block;width: 100px;" class="label">字段名</span>
                                                 </template>
-                                                <a-input v-model="item.name" placeholder="请输入字段名"
-                                                    style="width: 300px;" />
+                                                <a-input v-model="item.name" placeholder="请输入字段名" style="width: 300px;"
+                                                    @click.stop="" />
                                             </a-form-item>
                                         </template>
                                         <template #extra>
-                                            <a-button type="text" status="danger" @click.stop="">
+                                            <a-button type="text" status="danger" @click.stop="removeField(i)">
                                                 删除
                                             </a-button>
                                         </template>
                                         <div class="fieldContent">
                                             <a-row :gutter="16">
                                                 <a-col :span="10">
-                                                    <a-form-item field="tableType" label-col-flex="64px">
+                                                    <a-form-item :field="`tableFields[${i}].type`" label-col-flex="78px"
+                                                        :rules="[{ required: true, message: '请输入字段类型' }]">
                                                         <template #label>
                                                             <span class="label">字段类型</span>
                                                         </template>
@@ -72,7 +75,8 @@
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="9">
-                                                    <a-form-item field="tableDefaultValue" label-col-flex="50px">
+                                                    <a-form-item :field="`tableFields[${i}].defaultValue`"
+                                                        label-col-flex="50px">
                                                         <template #label>
                                                             <span class="label">默认值</span>
                                                         </template>
@@ -81,7 +85,8 @@
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="8">
-                                                    <a-form-item field="tableComments" label-col-flex="36px">
+                                                    <a-form-item :field="`tableFields[${i}].comment`"
+                                                        label-col-flex="36px">
                                                         <template #label>
                                                             <span class="label">注释</span>
                                                         </template>
@@ -90,7 +95,8 @@
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="10">
-                                                    <a-form-item field="tableOnUpdate" label-col-flex="75px">
+                                                    <a-form-item :field="`tableFields[${i}].onUpdate`"
+                                                        label-col-flex="75px">
                                                         <template #label>
                                                             <span class="label">onUpdate</span>
                                                         </template>
@@ -99,17 +105,20 @@
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="4">
-                                                    <a-form-item field="tableNotNull" label-col-flex="0px">
+                                                    <a-form-item :field="`tableFields[${i}].isPrimary`"
+                                                        label-col-flex="0px">
                                                         <a-checkbox v-model="item.notNull">非空</a-checkbox>
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="4" style="transform: translateX(-20px);">
-                                                    <a-form-item field="tableIsPrimary" label-col-flex="0px">
+                                                    <a-form-item :field="`tableFields[${i}].isAutoIncrement`"
+                                                        label-col-flex="0px">
                                                         <a-checkbox v-model="item.isPrimary">主键</a-checkbox>
                                                     </a-form-item>
                                                 </a-col>
                                                 <a-col :span="4" style="transform: translateX(-20px);">
-                                                    <a-form-item field="tableIsAutoIncrement" label-col-flex="0px">
+                                                    <a-form-item :field="`tableFields[${i}].isAutoIncrement`"
+                                                        label-col-flex="0px">
                                                         <a-checkbox v-model="item.isAutoIncrement">自增</a-checkbox>
                                                     </a-form-item>
                                                 </a-col>
@@ -118,16 +127,16 @@
                                     </a-collapse-item>
                                 </a-collapse>
                             </div>
-                            <a-button type="outline" style="border: dashed 1px rgb(var(--primary-6));margin: 10px 0;">
+                            <a-button type="outline" style="border: dashed 1px rgb(var(--primary-6));margin: 10px 0;"
+                                @click="addField">
                                 <template #icon>
                                     <icon-plus />
                                 </template>
-                                <!-- Use the default slot to avoid extra spaces -->
                                 <template #default>新增字段</template>
                             </a-button>
                             <a-space style="margin-top: 10px;display: flex;gap: 10px;">
-                                <a-button type="primary" style="width: 180px;">一键生成</a-button>
-                                <a-button type="outline">重置</a-button>
+                                <a-button type="primary" style="width: 180px;" html-type="submit">一键生成</a-button>
+                                <a-button type="outline" html-type="reset">重置</a-button>
                             </a-space>
                         </a-form>
                     </div>
@@ -137,7 +146,17 @@
                 <div class="title">
                     <span>输出结果</span>
                 </div>
-                <div class="content"></div>
+                <div class="content">
+                    <a-collapse style="height: 100%;">
+                        <a-collapse-item header="建表语句" key="1">
+                            <template #extra>
+                                <span style="font-size: 12px;" @click.stop="copySQL"><icon-copy /> 复制</span>
+                            </template>
+                            <pre v-if="result" ref="sqlPre">{{ result.value }}</pre>
+                            <a-empty v-else />
+                        </a-collapse-item>
+                    </a-collapse>
+                </div>
             </div>
         </div>
     </div>
@@ -145,9 +164,25 @@
 
 
 <script setup lang='ts'>
-import { reactive } from 'vue';
-
-const form = reactive({
+import type { ValidatedError } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
+import { onMounted, reactive, ref } from 'vue';
+interface Form {
+    databaseName: string;
+    tableName: string;
+    tableComments: string;
+    tableFields: {
+        name: string;
+        type: string;
+        defaultValue: string;
+        comment: string;
+        onUpdate: string;
+        isPrimary: boolean;
+        notNull: boolean;
+        isAutoIncrement: boolean;
+    }[];
+}
+const form = reactive<Form>({
     databaseName: '',
     tableName: 'test_table',
     tableComments: '',
@@ -161,34 +196,158 @@ const form = reactive({
             isPrimary: true,
             notNull: false,
             isAutoIncrement: true,
-        }, {
-            name: '',
-            type: '',
-            defaultValue: '',
-            comment: '',
-            onUpdate: '',
-            isPrimary: true,
-            notNull: false,
-            isAutoIncrement: true,
-        }, {
-            name: '',
-            type: '',
-            defaultValue: '',
-            comment: '',
-            onUpdate: '',
-            isPrimary: true,
-            notNull: false,
-            isAutoIncrement: true,
         },
     ]
 })
+const result = ref<{ value: string } | null>(null)
 const symbol = (n: number) => Symbol(n)
+
+//监听窗口变化
+onMounted(() => {
+    window.onresize = () => {
+        return (() => {
+            const width = document.body.clientWidth
+            const containersDom = document.getElementsByClassName('containers')[0] as HTMLDivElement
+            containersDom.style.flexDirection = width < 1400 ? 'column' : 'row'
+        })()
+    }
+})
+
+//tips
+const tips = (status: 'success' | 'warning', message = '') => {
+    switch (status) {
+        case 'success':
+            Message.success({
+                content: message || '成功生成',
+                position: "top",
+            })
+            break;
+        case 'warning':
+            Message.warning({
+                content: message || '请输入必填字段',
+                position: "top",
+            })
+            break;
+    }
+}
+
+//生成myysql语句
+const generateMySQLCreateTableStatement = (form: Form) => {
+    const fieldDefinitions = form.tableFields.map(field => {
+        let definition = `${field.name} ${field.type}`;
+
+        if (field.isPrimary) {
+            definition += ' PRIMARY KEY';
+        }
+
+        if (field.isAutoIncrement && ['int', 'bigint'].includes(field.type.toLowerCase())) {
+            definition += ' AUTO_INCREMENT';
+        }
+
+        if (field.notNull) {
+            definition += ' NOT NULL';
+        }
+
+        if (field.defaultValue !== '') {
+            definition += ` DEFAULT ${field.defaultValue}`;
+        }
+
+        if (field.onUpdate !== '') {
+            definition += ` ON UPDATE ${field.onUpdate}`;
+        }
+
+        if (field.comment !== '') {
+            definition += ` COMMENT '${field.comment.replace(/'/g, "\\'")}'`;
+        }
+
+        return definition;
+    });
+
+    const columnsClause = fieldDefinitions.join(',\n  ');
+
+    const tableCommentsClause = form.tableComments ? `\nCOMMENT '${form.tableComments.replace(/'/g, "\\'")}'` : '';
+    const tableHeaderClause = form.databaseName ? `CREATE TABLE IF NOT EXISTS \`${form.databaseName}\`.\`${form.tableName}\`` : `CREATE TABLE IF NOT EXISTS \`${form.tableName}\``;
+    return `${tableHeaderClause} (
+  ${columnsClause}
+)${tableCommentsClause};`.trim();
+};
+
+
+//展开的字段面板发生改变时触发
+const collapseActive = reactive<number[]>([])
+const collapseChange = (key: number) => {
+    if (collapseActive.includes(key)) {
+        collapseActive.splice(collapseActive.indexOf(key), 1);
+    } else {
+        collapseActive.push(key)
+    }
+}
+
+//表单提交
+const onSubmit = (data: {
+    values: Record<string, any>;
+    errors: Record<string, ValidatedError> | undefined;
+}): any => {
+    if (data.errors) { tips('warning'); return }
+    if (data.values.tableFields.length === 0) { tips('warning', '请至少添加一条字段'); return }
+
+    tips('success');
+    result.value = { value: generateMySQLCreateTableStatement(data.values as Form) };
+}
+//添加字段
+const addField = () => {
+    form.tableFields.push({
+        name: '',
+        type: '',
+        defaultValue: '',
+        comment: '',
+        onUpdate: '',
+        isPrimary: true,
+        notNull: false,
+        isAutoIncrement: true,
+    })
+}
+
+//删除字段
+const removeField = (key: number) => {
+    form.tableFields.splice(key, 1)
+    collapseActive.forEach((item, index) => {
+        if (item === key) {
+            collapseActive.splice(index, 1);
+        }
+        if (item > key) {
+            collapseActive[index] = item - 1;
+        }
+    });
+}
+
+//复制SQL语句
+const sqlPre = ref<HTMLPreElement | null>(null);
+onMounted(() => {
+    if (sqlPre.value) {
+        sqlPre.value.addEventListener('click', () => {
+            copySQL();
+        });
+    }
+});
+async function copySQL() {
+    if (sqlPre.value) {
+        try {
+            await navigator.clipboard.writeText(sqlPre.value.innerText);
+            console.log('SQL 语句已复制到剪贴板');
+        } catch (err) {
+            console.error('复制操作失败', err);
+        }
+    }
+}
+
 </script>
 
 
 <style scoped>
 .page {
     display: flex;
+    margin-right: 40px;
 
     .containers {
         flex: 1;
@@ -196,13 +355,14 @@ const symbol = (n: number) => Symbol(n)
         margin-top: 40px;
         justify-content: space-evenly;
         gap: 20px;
-
+        align-items: flex-start;
 
         .card {
-            width: 700px;
+            width: 100%;
             border: 1px solid #ccc;
             background-color: #fff;
             border-radius: 4px;
+            min-width: 580px;
 
             .title {
                 padding: 20px 30px;
@@ -211,7 +371,7 @@ const symbol = (n: number) => Symbol(n)
             }
 
             .content {
-                padding: 20px 25px;
+                padding: 30px 25px;
 
                 .inputForm {
                     margin: 20px 0;
