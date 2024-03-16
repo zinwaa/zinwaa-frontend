@@ -211,6 +211,7 @@
                 </div>
             </a-modal>
         </div>
+        <textarea id="copy-textarea" style="position: absolute; left: -9999px;"></textarea>
     </div>
 </template>
 
@@ -433,13 +434,41 @@ onMounted(() => {
     }
 });
 async function copySQL() {
+    // if (sqlPre.value) {
+    //     try {
+    //         await navigator.clipboard.writeText(sqlPre.value.innerText);
+    //         tips('success', 'SQL 语句已复制到剪贴板')
+    //     } catch (err) {
+    //         console.error(err);
+    //         tips('warning', '复制操作失败')
+    //     }
+    // } else {
+    //     tips('warning', '请先生成语句')
+    // }
     if (sqlPre.value) {
-        try {
-            await navigator.clipboard.writeText(sqlPre.value.innerText);
+        // navigator clipboard 需要https等安全上下文
+        if (navigator.clipboard && window.isSecureContext) {
+            // navigator clipboard 向剪贴板写文本
             tips('success', 'SQL 语句已复制到剪贴板')
-        } catch (err) {
-            console.error(err);
-            tips('warning', '复制操作失败')
+            return navigator.clipboard.writeText(sqlPre.value.innerText);
+        } else {
+            // 创建text area
+            let textArea = document.createElement("textarea");
+            textArea.value = sqlPre.value.innerText;
+            // 使text area不在viewport，同时设置不可见
+            textArea.style.position = "absolute";
+            textArea.style.opacity = '0';
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            return new Promise((res, rej) => {
+                // 执行复制命令并移除文本框
+                tips('success', 'SQL 语句已复制到剪贴板')
+                document.execCommand('copy') ? res(null) : rej();
+                textArea.remove();
+            });
         }
     } else {
         tips('warning', '请先生成语句')
