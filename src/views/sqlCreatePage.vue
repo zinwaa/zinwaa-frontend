@@ -262,6 +262,9 @@ const symbol = (n: number) => Symbol(n)
 
 //监听窗口变化
 onMounted(() => {
+    const width = document.body.clientWidth
+    const containersDom = document.getElementsByClassName('containers')[0] as HTMLDivElement
+    containersDom.style.flexDirection = width < 1400 ? 'column' : 'row'
     window.onresize = () => {
         return (() => {
             const width = document.body.clientWidth
@@ -435,6 +438,7 @@ async function copySQL() {
             await navigator.clipboard.writeText(sqlPre.value.innerText);
             tips('success', 'SQL 语句已复制到剪贴板')
         } catch (err) {
+            console.error(err);
             tips('warning', '复制操作失败')
         }
     } else {
