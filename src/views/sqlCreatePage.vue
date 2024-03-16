@@ -211,7 +211,6 @@
                 </div>
             </a-modal>
         </div>
-        <textarea id="copy-textarea" style="position: absolute; left: -9999px;"></textarea>
     </div>
 </template>
 
