@@ -1,5 +1,6 @@
 <template>
     <canvas></canvas>
+    <slot></slot>
 </template>
 
 
@@ -7,8 +8,6 @@
 import { onMounted } from 'vue';
 
 onMounted(() => {
-    document.body.style.backgroundImage = 'linear-gradient(-225deg, #231557 0%,#43107a 29%, #FF1361 100%)';
-
     // 定义星星的颜色
     const STAR_COLOR = '#fff';
     // 定义星星的大小
