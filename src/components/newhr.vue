@@ -19,7 +19,7 @@ const hrRightDom = ref<HTMLHRElement | null>(null)
 const hrDivDom = ref<HTMLDivElement | null>(null)
 onMounted(() => {
     if (props.text && textDom.value && hrLiftDom.value && hrRightDom.value && hrDivDom.value) {
-        hrLiftDom.value.style.width = hrRightDom.value.style.width = `${(hrDivDom.value.offsetWidth - textDom.value.offsetWidth - 20) / 2}px`
+        hrLiftDom.value.style.width = hrRightDom.value.style.width = `${(hrDivDom.value.offsetWidth - textDom.value.offsetWidth - 21) / 2}px`
         hrLiftDom.value.style.marginBottom = hrRightDom.value.style.marginBottom = `${(hrDivDom.value.offsetHeight / 2) - 35}px`
     }
 })

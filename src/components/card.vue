@@ -35,6 +35,9 @@ export default defineComponent({
     background-color: rgba(201, 195, 253, 0.6);
     min-width: 300px;
     backdrop-filter: blur(5px);
-    box-shadow: 3px 3px 10px rgba(162, 0, 255, 0.2);
+    box-shadow: 30px 30px 30px -10px rgba(162, 0, 255, .15),
+        inset 12px 12px 10px rgba(255, 255, 255, .5),
+        -15px -15px 35px rgba(255, 255, 255, .4),
+        inset -1px -1px 10px rgba(162, 0, 255, .2);
 }
 </style>
