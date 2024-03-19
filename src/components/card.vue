@@ -1,6 +1,6 @@
 <template>
     <div class="card" :style="{ width: props.width + 'px' }" ref="card">
-        <div class="card-slot">
+        <div class="inner">
             <slot></slot>
         </div>
 
@@ -8,21 +8,22 @@
 </template>
 
 
-<script setup lang='ts'>
-import { onMounted, ref } from 'vue';
+<script lang='ts'>
+import { defineComponent, type PropType } from 'vue';
 
-const props = defineProps<{
-    width: number
-}>();
-const card = ref<HTMLDivElement>();
-onMounted(() => {
-    document.onmousemove = (e) => {
-        const rect = card.value?.getBoundingClientRect() as DOMRect;
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.value?.style.setProperty('--x', `${x}px`);
-        card.value?.style.setProperty('--y', `${y}px`);
-    };
+export default defineComponent({
+    props: {
+        width: {
+            type: Number as PropType<number>,
+            default: 300 // 设置默认值为 300
+        }
+    },
+    setup(props) {
+        // 在此处使用 props.width 将会自动获得默认值
+        return {
+            props
+        };
+    }
 });
 </script>
 
@@ -31,17 +32,9 @@ onMounted(() => {
 .card {
     position: relative;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: rgba(201, 195, 253, 0.6);
     min-width: 300px;
-
-    .card-slot {
-        padding: 15px;
-        position: relative;
-        height: 98%;
-        background-color: #ccc;
-        border-radius: inherit;
-        display: flex;
-        box-sizing: border-box;
-    }
+    backdrop-filter: blur(5px);
+    box-shadow: 3px 3px 10px rgba(162, 0, 255, 0.2);
 }
 </style>

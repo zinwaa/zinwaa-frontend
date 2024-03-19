@@ -1,5 +1,4 @@
 <template>
-    <!-- 这里是个临时的顶部导航栏 -->
     <div class="menu-demo" ref="menuDom">
         <a-menu mode="horizontal" :default-selected-keys="defaultSelectedKeys">
             <a-menu-item key="0" disabled style="color: #000000;padding: 0;margin-right: 38px;">
@@ -67,7 +66,7 @@ export default defineComponent({
     width: 100%;
     display: flex;
     align-items: center;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     border-bottom: 1px solid var(--color-fill-3);
 }
 
