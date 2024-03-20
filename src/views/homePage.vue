@@ -59,11 +59,13 @@
         </a-affix>
         <div class="main">
             <card :width="1000">
-                1
+                个人信息
                 <ghost :size="50" />
             </card>
             <card :width="1000">
-                1
+                <div class="skill">
+                    skill
+                </div>
             </card>
             <card :width="1000">
                 1
@@ -85,21 +87,7 @@ const data = reactive({
         avatarUrl: '/src/assets/img/avatar.png'
     }
 })
-onMounted(() => {
-    const dom = container.value
-    if (dom) {
-        // const { width, height } = dom.getBoundingClientRect()
-        // const { clientWidth, clientHeight } = document.documentElement
-        // const scale = clientWidth / width
-        // dom.style.transform = `scale(${scale})`
-        // dom.scrollIntoView({
-        //     behavior: 'smooth',
-        //     block: 'start'
-        // })
 
-
-    }
-})
 // -----------------------------------跳转-------------------------------------
 const handleBackTop = () => {
     container.value?.scrollIntoView({
