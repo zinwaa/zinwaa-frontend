@@ -1,7 +1,7 @@
 <template>
     <background />
-    <div class="containers">
-        <div class="zinwaaInfo" ref="info">
+    <div class="containers" ref="container">
+        <a-affix class="zinwaaInfo" :offset-top="35">
             <card>
                 <div class="info">
                     <a-avatar :image-url="data.info.avatarUrl" :size="80" />
@@ -50,18 +50,22 @@
                 </div>
                 <hr style="margin-bottom: 30px;">
                 <div class="jump">
-                    <a-button type="dashed" status="success">返回顶点</a-button>
+                    <a-button type="dashed" status="success" @click="handleBackTop">返回顶点</a-button>
                     <a-button type="dashed" status="success">返回顶点</a-button>
                     <a-button type="dashed" status="success">返回顶点</a-button>
                     <a-button type="dashed" status="success">返回顶点</a-button>
                 </div>
             </card>
-        </div>
-        <div class="main" ref="main">
+        </a-affix>
+        <div class="main">
             <card :width="1000">
-                <div style="height: 2000px; background-color: antiquewhite;">
-
-                </div>
+                1
+            </card>
+            <card :width="1000">
+                1
+            </card>
+            <card :width="1000">
+                1
             </card>
         </div>
     </div>
@@ -73,28 +77,48 @@ import background from '@/components/background.vue'
 import card from '@/components/card.vue'
 import newhr from '@/components/newhr.vue'
 import { onMounted, reactive, ref } from 'vue'
-import { handleWheel } from '@/utils/wheel'
+const container = ref<HTMLElement | null>(null)
 const data = reactive({
     info: {
         avatarUrl: '/src/assets/img/avatar.png'
     }
 })
-const info = ref<HTMLElement | null>(null)
-const main = ref<HTMLElement | null>(null)
+onMounted(() => {
+    const dom = container.value
+    if (dom) {
+        // const { width, height } = dom.getBoundingClientRect()
+        // const { clientWidth, clientHeight } = document.documentElement
+        // const scale = clientWidth / width
+        // dom.style.transform = `scale(${scale})`
+        // dom.scrollIntoView({
+        //     behavior: 'smooth',
+        //     block: 'start'
+        // })
 
+
+    }
+})
+// -----------------------------------跳转-------------------------------------
+const handleBackTop = () => {
+    container.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+    })
+}
 </script>
 
 
 <style scoped lang="less">
 .containers {
-    margin: 35px auto;
-    display: flex;
-    gap: 30px;
+    margin: 35px min(calc(100vw - 1330px), 0);
+    padding-bottom: 100px;
     width: 100%;
+    display: flex;
     justify-content: center;
 
     .zinwaaInfo {
-        height: 300px;
+        position: fixed;
+        margin-right: 1030px;
 
         .info {
             display: flex;
@@ -189,6 +213,12 @@ const main = ref<HTMLElement | null>(null)
         }
     }
 
-    .main {}
+    .main {
+        transition: all .5s;
+        margin-left: 330px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 }
 </style>
