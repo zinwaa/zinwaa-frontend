@@ -60,6 +60,7 @@
         <div class="main">
             <card :width="1000">
                 1
+                <ghost :size="50" />
             </card>
             <card :width="1000">
                 1
@@ -77,6 +78,7 @@ import background from '@/components/background.vue'
 import card from '@/components/card.vue'
 import newhr from '@/components/newhr.vue'
 import { onMounted, reactive, ref } from 'vue'
+import ghost from '@/components/ghost.vue'
 const container = ref<HTMLElement | null>(null)
 const data = reactive({
     info: {
