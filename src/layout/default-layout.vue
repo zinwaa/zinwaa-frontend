@@ -10,13 +10,15 @@
                     <span>inWaa 的个人主页</span>
                 </div>
             </a-menu-item>
-            <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">{{ route.meta.title
-                }}</a-menu-item>
+            <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">{{
+            route.meta.title
+        }}</a-menu-item>
         </a-menu>
     </div>
     <div class="PageBody">
         <router-view />
     </div>
+
 </template>
 <script lang="ts">
 import _ from 'lodash'
@@ -76,6 +78,8 @@ export default defineComponent({
     min-height: 100vh;
     height: auto;
     padding-top: 58px;
+    position: relative;
+    z-index: -10;
 }
 
 .title {
