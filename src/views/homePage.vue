@@ -58,18 +58,32 @@
             </card>
         </a-affix>
         <div class="main">
-            <card :width="1000">
-                个人信息
-                <ghost :size="50" />
-            </card>
+            <div class="present">
+                <div class="left">
+                    <span class="welcome">HI MY NEW FRIEND!</span>
+                    <div class="welcome">
+                        <div class="avatar">
+                            <a-avatar :image-url="data.info.avatarUrl" :size="130" />
+                        </div>
+                        <div>
+                            <span class="title">HELLO</span>
+                            <span class="title">I'M ZinWaa</span>
+                        </div>
+                    </div>
+                </div>
+                <ghost :size="50" style="margin-right: 30px;" />
+            </div>
             <card :width="1000">
                 <div class="skill">
-                    skill
+                    <block :skills="data.skills" />
                 </div>
             </card>
-            <card :width="1000">
-                1
-            </card>
+            <div class="projects">
+                项目
+            </div>
+            <div class="tools">
+                工具
+            </div>
         </div>
     </div>
 </template>
@@ -81,11 +95,26 @@ import card from '@/components/card.vue'
 import newhr from '@/components/newhr.vue'
 import { onMounted, reactive, ref } from 'vue'
 import ghost from '@/components/ghost.vue'
+import block from '@/components/block.vue'
+
+
 const container = ref<HTMLElement | null>(null)
 const data = reactive({
     info: {
         avatarUrl: '/src/assets/img/avatar.png'
-    }
+    },
+    skills: [
+        'HTML',
+        'CSS',
+        'JavaScript',
+        'Vue3',
+        'Less',
+        'Sass',
+        'TypeScript',
+        'Element-UI',
+        'Arco Design',
+        'Vite',
+    ]
 })
 
 // -----------------------------------跳转-------------------------------------
@@ -209,6 +238,39 @@ const handleBackTop = () => {
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        .present {
+            display: flex;
+            justify-content: space-between;
+
+            .left {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+
+                .welcome {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 20px;
+
+                    div {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-evenly;
+
+                        .title {
+                            margin-left: 10px;
+                            font-size: 40px;
+                            font-family: 'Calibri';
+                            font-weight: 600;
+                            letter-spacing: 2px;
+                        }
+                    }
+                }
+
+
+            }
+        }
     }
 }
 </style>
