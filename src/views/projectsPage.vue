@@ -1,10 +1,10 @@
 <template>
     <div class="page">
         <div class="menu">
-            <a-menu mode="pop" showCollapseButton :default-selected-keys="['0']">
-                <a-menu-item key="0">
-                    <template #icon><icon-apps></icon-apps></template>
-                    代码生成
+            <a-menu mode="pop" showCollapseButton :default-selected-keys="[projectsMenuKey]">
+                <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
+                    <template #icon><i :class="route.meta.icon"></i></template>
+                    {{ route.name }}
                 </a-menu-item>
             </a-menu>
         </div>
@@ -218,7 +218,69 @@
 <script setup lang='ts'>
 import type { ValidatedError } from '@arco-design/web-vue';
 import { Message } from '@arco-design/web-vue';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
+
+
+
+//-----------------------------------------侧边栏路由处理-----------------------------------------
+import { useRoute, useRouter } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
+
+interface MenuItem {
+    path: string;
+    name: string;
+    meta: {
+        title: string;
+        icon?: string | null;
+    };
+}
+
+// 声明响应式状态
+const projectsMenuKey = ref('sqlCreate');
+const routes = ref<MenuItem[]>([]);
+
+
+// 获取菜单路由
+function getMenuRoutes(routesList: RouteRecordRaw[]): MenuItem[] {
+    const creativeCenterPageChildren = routesList.find((route) => route.name === 'dashboard')?.children?.find((route) => route.name === 'projects')?.children ?? [];
+
+    return creativeCenterPageChildren
+        .filter((route) => route.meta && route.meta.asideMenu)
+        .map((route) => ({
+            path: route.path,
+            name: route.name,
+            meta: {
+                title: route.meta?.title,
+                icon: route.meta?.icon ?? null,
+            },
+        }) as MenuItem);
+}
+
+// 获取当前路由实例
+const $route = useRoute();
+// 获取全局路由器实例
+const router = useRouter();
+
+// 生命周期钩子
+onMounted(() => {
+    routes.value = getMenuRoutes(Array.from(router.options.routes));
+});
+
+// 监听路由变化
+watch(
+    $route,
+    (newRoute) => {
+        console.log(newRoute);
+
+        if (newRoute.path === '/') {
+            projectsMenuKey.value = 'sqlCreate';
+        } else {
+            projectsMenuKey.value = newRoute.path.split('/')[2];
+        }
+    },
+    { immediate: true }
+);
+
 
 //--------------------------------------------数据部分--------------------------------------------
 interface Form {
@@ -316,6 +378,7 @@ const onSubmit = (data: {
     tips('success');
     result.value = { value: generateMySQLCreateTableStatement(data.values as Form) };
 }
+
 //添加字段
 const addField = () => {
     form.tableFields.push({

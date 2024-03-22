@@ -18,29 +18,38 @@ let pages = [
         meta: {
           title: '主页',
           headMenu: true,
-          asideMenu: false
+
         }
       }, {
-        path: '/sqlCreate',
-        name: 'sqlCreate',
-        component: () => import('@/views/sqlCreatePage.vue'),
+        path: '/projects',
+        name: 'projects',
+        component: () => import('@/views/projectsPage.vue'),
         meta: {
-          title: 'SQL语句生成器',
+          title: '我的项目',
           headMenu: true,
-          asideMenu: false
         },
         children: [
           {
-            path: '/sqlCreate',
+            path: '/projects/sqlCreate',
             name: 'sqlCreate',
-            component: () => import('@/views/sqlCreatePage.vue'),
+            component: () => import('@/views/projectsPage.vue'),
             meta: {
               title: 'SQL语句生成器',
-              headMenu: true,
-              asideMenu: false
+              headMenu: false,
+              asideMenu: true
             }
           },
         ]
+      },
+      {
+        path: '/tools',
+        name: 'tools',
+        component: () => import('@/views/toolsPage.vue'),
+        meta: {
+          title: '小工具',
+          headMenu: true,
+          asideMenu: true
+        }
       }
     ]
   }
