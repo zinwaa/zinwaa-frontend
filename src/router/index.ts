@@ -32,7 +32,7 @@ let pages = [
           {
             path: '/projects/sqlCreate',
             name: 'sqlCreate',
-            component: () => import('@/views/projectsPage.vue'),
+            component: () => import('@/views/projects/sqlCreate.vue'),
             meta: {
               title: 'SQL语句生成器',
               headMenu: false,
