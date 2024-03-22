@@ -46,11 +46,11 @@ onMounted(() => {
     // 当窗口大小改变时，重新调整大小
     window.onresize = resize;
     // 当鼠标在canvas上移动时，更新鼠标指针位置
-    canvas.onmousemove = onMouseMove;
+    document.onmousemove = onMouseMove;
     // 当触摸屏在canvas上移动时，更新鼠标指针位置
-    canvas.ontouchmove = onTouchMove;
+    document.ontouchmove = onTouchMove;
     // 当触摸屏离开canvas时，更新鼠标指针位置
-    canvas.ontouchend = onMouseLeave;
+    document.ontouchend = onMouseLeave;
     // 当鼠标离开文档时，更新鼠标指针位置
     document.onmouseleave = onMouseLeave;
     // 生成星星

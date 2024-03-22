@@ -75,7 +75,8 @@
             </div>
             <card :width="1000">
                 <div class="skill">
-                    <block :skills="data.skills" />
+                    <span class="title">技能</span>
+                    <block :skills="data.skills" class="skillCards" />
                 </div>
             </card>
             <div class="projects">
@@ -112,7 +113,7 @@ const data = reactive({
         'Sass',
         'TypeScript',
         'Element-UI',
-        'Arco Design',
+        'ArcoDesign',
         'Vite',
     ]
 })
@@ -131,9 +132,13 @@ const handleBackTop = () => {
 .containers {
     margin: 35px min(calc(100vw - 1330px), 0);
     padding-bottom: 100px;
-    width: 100%;
     display: flex;
     justify-content: center;
+
+    &>div {
+        position: absolute;
+        z-index: 5;
+    }
 
     .zinwaaInfo {
         position: fixed;
@@ -237,7 +242,7 @@ const handleBackTop = () => {
         margin-left: 330px;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 30px;
 
         .present {
             display: flex;
@@ -269,6 +274,22 @@ const handleBackTop = () => {
                 }
 
 
+            }
+        }
+
+        .skill {
+            .title {
+                display: block;
+                font-size: 20px;
+                font-weight: 400;
+                letter-spacing: 2px;
+                padding-left: 40px;
+                padding-top: 20px;
+            }
+
+            .skillCards {
+                padding: 10px 40px;
+                margin-bottom: 30px;
             }
         }
     }

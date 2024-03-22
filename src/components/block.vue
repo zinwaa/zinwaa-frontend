@@ -59,7 +59,6 @@ onMounted(() => {
     min-height: 50px;
     justify-content: flex-start;
     align-items: center;
-    margin: 30px 10px;
 
     .card {
         /* 每个卡片的宽高，要减去间距 */
