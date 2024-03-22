@@ -74,7 +74,6 @@ export default defineComponent({
 
 .PageBody {
     height: 100%;
-    background-color: var(--color-neutral-2);
     min-height: 100vh;
     height: auto;
     padding-top: 58px;

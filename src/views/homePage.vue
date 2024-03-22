@@ -51,9 +51,9 @@
                 <hr style="margin-bottom: 30px;">
                 <div class="jump">
                     <a-button type="dashed" status="success" @click="handleBackTop">返回顶点</a-button>
-                    <a-button type="dashed" status="success">返回顶点</a-button>
-                    <a-button type="dashed" status="success">返回顶点</a-button>
-                    <a-button type="dashed" status="success">返回顶点</a-button>
+                    <a-button type="dashed" status="success" @click="handleSkills">跳转skills</a-button>
+                    <a-button type="dashed" status="success" @click="handleProjects">跳转项目</a-button>
+                    <a-button type="dashed" status="success" @click="handleTools">跳转工具</a-button>
                 </div>
             </card>
         </a-affix>
@@ -73,19 +73,59 @@
                 </div>
                 <ghost :size="50" style="margin-right: 30px;" />
             </div>
+            <span class="title" ref="skill"><icon-code />Skills</span>
             <card :width="1000">
                 <div class="skill">
-                    <span class="title">技能</span>
                     <block :skills="data.skills" class="skillCards" />
                 </div>
             </card>
+            <span class="title" ref="project"><icon-layers />Projects</span>
             <div class="projects">
-                项目
+                <div v-for="item in data.projects">
+                    <card :width="490" style="height: 100%">
+                        <div class="project">
+                            <div class="top">
+                                <div class="projectImg">
+                                    <a-avatar :image-url="item.img" v-if="item.img" :size="80" />
+                                    <a-avatar v-else :size="80" :style="{ backgroundColor: '#14a9f8' }">{{ item.name
+                                        }}</a-avatar>
+                                </div>
+                                <div class="projectName">
+                                    <span>{{ item.name }}</span>
+                                </div>
+                            </div>
+                            <div class="projectDescription">
+                                <span>项目简介：</span>
+                                <span>{{ item.description }}</span>
+                            </div>
+                            <div class="projectLink">
+                                <a-link href="link" icon :hoverable="false">体验一下</a-link>
+                            </div>
+                        </div>
+                    </card>
+                </div>
             </div>
+            <span class="title" ref="tool"><icon-tool />Tools</span>
             <div class="tools">
-                工具
+                <card :width="490" style="height: 100%">
+                    <div class="tool" v-for="item in data.tools">
+                        <div class="toolName">
+                            <span>{{ item.name }} :</span>
+                        </div>
+                        <div class="toolDescription">
+                            <span>{{ item.description }}</span>
+                        </div>
+                        <div class="toolLink">
+                            <a-link href="link" icon :hoverable="false">体验一下</a-link>
+                        </div>
+                    </div>
+                </card>
+            </div>
+            <div class="footer" style="height: 100px;">
             </div>
         </div>
+
+
     </div>
 </template>
 
@@ -94,12 +134,15 @@
 import background from '@/components/background.vue'
 import card from '@/components/card.vue'
 import newhr from '@/components/newhr.vue'
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import ghost from '@/components/ghost.vue'
 import block from '@/components/block.vue'
 
 
 const container = ref<HTMLElement | null>(null)
+const skill = ref<HTMLElement | null>(null)
+const tool = ref<HTMLElement | null>(null)
+const project = ref<HTMLElement | null>(null)
 const data = reactive({
     info: {
         avatarUrl: '/src/assets/img/avatar.png'
@@ -115,6 +158,37 @@ const data = reactive({
         'Element-UI',
         'ArcoDesign',
         'Vite',
+    ],
+    projects: [
+        {
+            name: '项目1',
+            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
+            link: 'https://www.baidu.com'
+        },
+        {
+            name: '项目2',
+            description: '项目2描述',
+            img: '/src/assets/img/project2.png',
+            link: 'https://www.baidu.com'
+        },
+        {
+            name: '项目3',
+            description: '项目2描述',
+            img: '/src/assets/img/project2.png',
+            link: 'https://www.baidu.com'
+        },
+        {
+            name: '项目1',
+            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
+            link: 'https://www.baidu.com'
+        },
+    ],
+    tools: [
+        {
+            name: '项目1',
+            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
+            link: 'https://www.baidu.com'
+        },
     ]
 })
 
@@ -122,18 +196,38 @@ const data = reactive({
 const handleBackTop = () => {
     container.value?.scrollIntoView({
         behavior: 'smooth',
-        block: 'start'
-    })
+        block: 'start',
+    });
+}
+const handleSkills = () => {
+    skill.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+    });
+}
+const handleProjects = () => {
+    project.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+    });
+}
+const handleTools = () => {
+    tool.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+    });
 }
 </script>
 
 
 <style scoped lang="less">
 .containers {
-    margin: 35px min(calc(100vw - 1330px), 0);
+
     padding-bottom: 100px;
     display: flex;
     justify-content: center;
+    margin: 35px min(calc(100vw - 1330px), 0);
+    width: 100%;
 
     &>div {
         position: absolute;
@@ -243,6 +337,8 @@ const handleBackTop = () => {
         display: flex;
         flex-direction: column;
         gap: 30px;
+        width: 1000px;
+
 
         .present {
             display: flex;
@@ -265,7 +361,7 @@ const handleBackTop = () => {
 
                         .title {
                             margin-left: 10px;
-                            font-size: 40px;
+                            font-size: 30px;
                             font-family: 'Calibri';
                             font-weight: 600;
                             letter-spacing: 2px;
@@ -277,19 +373,69 @@ const handleBackTop = () => {
             }
         }
 
-        .skill {
-            .title {
-                display: block;
-                font-size: 20px;
-                font-weight: 400;
-                letter-spacing: 2px;
-                padding-left: 40px;
-                padding-top: 20px;
-            }
+        &>.title {
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            padding-left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            text-shadow: #91caff 3px 4px 4px;
+            margin-top: 50px;
+        }
 
+        .skill {
             .skillCards {
                 padding: 10px 40px;
-                margin-bottom: 30px;
+                margin: 30px 0;
+            }
+        }
+
+        .projects,
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+
+            .project,
+            .tool {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                justify-content: space-between;
+
+                .top {
+                    display: flex;
+                    gap: 20px;
+                    align-items: flex-end;
+                    margin: 0 0 10px 20px;
+
+
+                }
+
+                .projectName,
+                .toolName {
+                    font-size: 16px;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                }
+
+                .projectDescription,
+                .toolDescription {
+                    line-height: 18px;
+                    font-size: 14px;
+                    letter-spacing: 1px;
+                }
+
+                .projectLink,
+                .toolLink {
+                    display: flex;
+                    align-self: flex-end;
+                }
             }
         }
     }

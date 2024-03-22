@@ -39,5 +39,9 @@ export default defineComponent({
         inset 12px 12px 10px rgba(255, 255, 255, .5),
         -15px -15px 35px rgba(255, 255, 255, .4),
         inset -1px -1px 10px rgba(162, 0, 255, .2);
+
+    .inner {
+        height: 100%;
+    }
 }
 </style>
