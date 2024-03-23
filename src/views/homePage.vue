@@ -94,12 +94,22 @@
                                     <span>{{ item.name }}</span>
                                 </div>
                             </div>
+                            <div class="projectSkills">
+                                <span>项目技术：</span>
+                                <a-space wrap>
+                                    <a-tag v-for="(color, index) of item.skills" :key="index"
+                                        :color="getEnumColor(color)">
+                                        {{ color }}
+                                    </a-tag>
+                                </a-space>
+                            </div>
                             <div class="projectDescription">
                                 <span>项目简介：</span>
                                 <span>{{ item.description }}</span>
                             </div>
                             <div class="projectLink">
-                                <a-link icon :hoverable="false" @click="">体验一下</a-link>
+                                <a-link icon :hoverable="false"
+                                    @click="router.push(`/projects/${item.link}`)">体验一下</a-link>
                             </div>
                         </div>
                     </card>
@@ -137,60 +147,25 @@ import newhr from '@/components/newhr.vue'
 import { reactive, ref } from 'vue'
 import ghost from '@/components/ghost.vue'
 import block from '@/components/block.vue'
-
+import { useRouter } from 'vue-router'
+import { globalData, type TSkill, type IGlobalData } from '@/assets/data'
 
 const container = ref<HTMLElement | null>(null)
 const skill = ref<HTMLElement | null>(null)
 const tool = ref<HTMLElement | null>(null)
 const project = ref<HTMLElement | null>(null)
-const data = reactive({
-    info: {
-        avatarUrl: '/src/assets/img/avatar.png'
-    },
-    skills: [
-        'HTML',
-        'CSS',
-        'JavaScript',
-        'Vue3',
-        'Less',
-        'Sass',
-        'TypeScript',
-        'Element-UI',
-        'ArcoDesign',
-        'Vite',
-    ],
-    projects: [
-        {
-            name: '项目1',
-            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
-            link: 'https://www.baidu.com'
-        },
-        {
-            name: '项目2',
-            description: '项目2描述',
-            img: '/src/assets/img/project2.png',
-            link: 'https://www.baidu.com'
-        },
-        {
-            name: '项目3',
-            description: '项目2描述',
-            img: '/src/assets/img/project2.png',
-            link: 'https://www.baidu.com'
-        },
-        {
-            name: '项目1',
-            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
-            link: 'https://www.baidu.com'
-        },
-    ],
-    tools: [
-        {
-            name: '项目1',
-            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
-            link: 'https://www.baidu.com'
-        },
-    ]
-})
+
+// 获取全局路由器实例
+const router = useRouter();
+// 网页数据
+const data = reactive<IGlobalData>(globalData)
+
+// 获取标签颜色
+import { tagColor } from "@/assets/style/tagColor";
+const getEnumColor = (colorName: TSkill) => {
+    // 这里进行颜色名称到枚举值的映射，假设都是相同的字符串
+    return tagColor[colorName] || 'default-color'; // 当颜色名称不存在于枚举时返回默认颜色
+}
 
 // -----------------------------------跳转-------------------------------------
 const handleBackTop = () => {
@@ -424,6 +399,12 @@ const handleTools = () => {
                     margin-bottom: 10px;
                 }
 
+                .projectSkills {
+                    line-height: 18px;
+                    font-size: 15px;
+                    margin: 10px 0;
+                }
+
                 .projectDescription,
                 .toolDescription {
                     line-height: 18px;
@@ -436,6 +417,7 @@ const handleTools = () => {
                     display: flex;
                     align-self: flex-end;
                 }
+
             }
         }
     }

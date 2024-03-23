@@ -3,7 +3,10 @@
         <div class="menu">
             <a-menu mode="pop" showCollapseButton :selected-keys="[projectsMenuKey]">
                 <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
-                    <template #icon><i :class="route.meta.icon"></i></template>
+                    <template #icon>
+                        <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
+                        <icon-apps v-else />
+                    </template>
                     {{ route.name }}
                 </a-menu-item>
             </a-menu>
@@ -67,8 +70,10 @@ watch(
     (newRoute) => {
         if (newRoute.path === '/projects') {
             projectsMenuKey.value = 'sqlCreate';
+            router.push(`/projects/${projectsMenuKey.value}`);
         } else {
             projectsMenuKey.value = newRoute.path.split('/')[2];
+            router.push(`/projects/${projectsMenuKey.value}`);
         }
     },
     { immediate: true }
@@ -88,7 +93,6 @@ watch(
     height: 600px;
     padding: 40px;
     box-sizing: border-box;
-    background-color: var(--color-neutral-2);
     flex: 0;
 }
 

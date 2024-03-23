@@ -36,7 +36,8 @@ let pages = [
             meta: {
               title: 'SQL语句生成器',
               headMenu: false,
-              asideMenu: true
+              asideMenu: true,
+              icon: 'icon-apps'
             }
           },
         ]
