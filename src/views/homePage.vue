@@ -144,10 +144,10 @@
 import background from '@/components/background.vue'
 import card from '@/components/card.vue'
 import newhr from '@/components/newhr.vue'
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import ghost from '@/components/ghost.vue'
 import block from '@/components/block.vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { globalData, type TSkill, type IGlobalData } from '@/assets/data'
 
 const container = ref<HTMLElement | null>(null)
@@ -155,8 +155,6 @@ const skill = ref<HTMLElement | null>(null)
 const tool = ref<HTMLElement | null>(null)
 const project = ref<HTMLElement | null>(null)
 
-// 获取全局路由器实例
-const router = useRouter();
 // 网页数据
 const data = reactive<IGlobalData>(globalData)
 
@@ -164,7 +162,7 @@ const data = reactive<IGlobalData>(globalData)
 import { tagColor } from "@/assets/style/tagColor";
 const getEnumColor = (colorName: TSkill) => {
     // 这里进行颜色名称到枚举值的映射，假设都是相同的字符串
-    return tagColor[colorName] || 'default-color'; // 当颜色名称不存在于枚举时返回默认颜色
+    return tagColor[colorName] || '#168cff'; // 当颜色名称不存在于枚举时返回默认颜色
 }
 
 // -----------------------------------跳转-------------------------------------
@@ -192,6 +190,20 @@ const handleTools = () => {
         block: 'start',
     });
 }
+
+// -----------------------------------路由-------------------------------------
+// 获取当前路由实例
+const $route = useRoute();
+// 获取全局路由器实例
+const router = useRouter();
+// 监听路由变化
+watch(
+    $route,
+    (newRoute) => {
+        router.push(`${newRoute.path}`);
+    },
+    { immediate: true }
+);
 </script>
 
 

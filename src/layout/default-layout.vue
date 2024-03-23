@@ -1,6 +1,6 @@
 <template>
     <div class="menu-demo" ref="menuDom">
-        <a-menu mode="horizontal" :default-selected-keys="defaultSelectedKeys">
+        <a-menu mode="horizontal" :selected-keys="defaultSelectedKeys">
             <a-menu-item key="0" disabled style="color: #000000;padding: 0;margin-right: 38px;">
                 <div class="title">
                     <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" class="icon">
@@ -57,6 +57,11 @@ export default defineComponent({
                     }
                 })) as MenuItem[]
         },
+    },
+    watch: {
+        $route(to, from) {
+            this.defaultSelectedKeys = [to.matched[1]?.name as RouteRecordName]
+        }
     }
 })
 </script>
