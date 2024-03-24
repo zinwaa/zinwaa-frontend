@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "nprogress": "^0.2.0",
+    "prismjs": "^1.29.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },
@@ -21,6 +22,7 @@
     "@types/lodash": "^4.17.0",
     "@types/node": "^20.11.25",
     "@types/nprogress": "^0.2.3",
+    "@types/prismjs": "^1.26.3",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.5.1",
     "less": "^4.2.0",

@@ -50,7 +50,20 @@ let pages = [
           title: '小工具',
           headMenu: true,
           asideMenu: true
-        }
+        },
+        children: [
+          {
+            path: '/tools/svgAnimation',
+            name: 'svgAnimation',
+            component: () => import('@/views/tools/svgAnimation.vue'),
+            meta: {
+              title: 'svg描边动画',
+              headMenu: false,
+              asideMenu: true,
+              icon: 'icon-apps'
+            }
+          },
+        ]
       }
     ]
   }

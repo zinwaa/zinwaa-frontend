@@ -126,7 +126,7 @@
                             <span>{{ item.description }}</span>
                         </div>
                         <div class="toolLink">
-                            <a-link href="link" icon :hoverable="false">体验一下</a-link>
+                            <a-link icon :hoverable="false" @click="router.push(`/tools/${item.link}`)">体验一下</a-link>
                         </div>
                     </div>
                 </card>
@@ -134,8 +134,6 @@
             <div class="footer" style="height: 100px;">
             </div>
         </div>
-
-
     </div>
 </template>
 
