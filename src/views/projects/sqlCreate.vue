@@ -463,7 +463,7 @@ async function copySQL() {
 </script>
 
 
-<style scoped>
+<style scoped lang="less">
 .containers {
     flex: 1;
     display: flex;

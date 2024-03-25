@@ -1,16 +1,18 @@
 <template>
     <div class="page">
-        <div class="menu">
-            <a-menu mode="pop" showCollapseButton :selected-keys="[toolsMenuKey]">
-                <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
-                    <template #icon>
-                        <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
-                        <icon-apps v-else />
-                    </template>
-                    {{ route.name }}
-                </a-menu-item>
-            </a-menu>
-        </div>
+        <a-affix :offsetTop="20" :style="{ width: `${menuWidth}px}` }">
+            <div class="menu" ref="menu">
+                <a-menu mode="pop" showCollapseButton :selected-keys="[toolsMenuKey]">
+                    <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
+                        <template #icon>
+                            <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
+                            <icon-apps v-else />
+                        </template>
+                        {{ route.name }}
+                    </a-menu-item>
+                </a-menu>
+            </div>
+        </a-affix>
         <div class="content">
             <router-view />
         </div>
@@ -21,7 +23,19 @@
 <script setup lang='ts'>
 import { onMounted, watch, ref } from 'vue';
 
-//-----------------------------------------侧边栏路由处理-----------------------------------------
+
+//-----------------------------------------监听菜单宽度------------------------------------------
+const menuWidth = ref(0)
+const menu = ref<HTMLDivElement | null>(null)
+onMounted(() => {
+    menuWidth.value = menu.value?.offsetWidth || 0
+    watch(() => menu.value?.offsetWidth, (newVal) => {
+        menuWidth.value = newVal!
+    })
+})
+
+
+// -----------------------------------------侧边栏路由处理-----------------------------------------
 import { useRoute, useRouter } from 'vue-router';
 import type { RouteRecordRaw } from 'vue-router';
 
@@ -85,6 +99,10 @@ watch(
 .page {
     display: flex;
     margin-right: 40px;
+
+    .content {
+        flex: 1;
+    }
 }
 
 .menu {
