@@ -20,10 +20,12 @@
                     </div>
                     <a-space class="code-btn">
                         <a-tooltip :content="isShow ? '隐藏代码' : '显示代码'" popup-container=".btn">
-                            <a-button type="outline" shape="circle" @click="codeShow"><icon-code /></a-button>
+                            <a-button type="outline" shape="circle" @click="codeShow"
+                                class="btn"><icon-code /></a-button>
                         </a-tooltip>
                         <a-tooltip content="复制代码" popup-container=".btn">
-                            <a-button type="outline" shape="circle" @click="codeCopy"><icon-code /></a-button>
+                            <a-button type="outline" shape="circle" @click="codeCopy"
+                                class="btn"><icon-copy /></a-button>
                         </a-tooltip>
                     </a-space>
                     <div class="code" ref="code" style="height: 0px;">
@@ -84,7 +86,7 @@ const replay = () => {
 const codeCopy = () => {
     if (navigator.clipboard && window.isSecureContext) {
         // navigator clipboard 向剪贴板写文本
-        tips('success', 'SQL 语句已复制到剪贴板')
+        tips('success', '复制成功')
         return navigator.clipboard.writeText(toolsCode);
     } else {
         // 创建text area
@@ -100,7 +102,7 @@ const codeCopy = () => {
         textArea.select();
         return new Promise((res, rej) => {
             // 执行复制命令并移除文本框
-            tips('success', 'SQL 语句已复制到剪贴板')
+            tips('success', '复制成功')
             document.execCommand('copy') ? res(null) : rej();
             textArea.remove();
         });

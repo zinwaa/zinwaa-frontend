@@ -1,6 +1,6 @@
 <template>
     <div class="page">
-        <a-affix :offsetTop="20" :style="{ width: `${menuWidth}px}` }">
+        <a-affix :offset-top="60">
             <div class="menu" ref="menu">
                 <a-menu mode="pop" showCollapseButton :selected-keys="[toolsMenuKey]">
                     <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
@@ -24,15 +24,7 @@
 import { onMounted, watch, ref } from 'vue';
 
 
-//-----------------------------------------监听菜单宽度------------------------------------------
-const menuWidth = ref(0)
-const menu = ref<HTMLDivElement | null>(null)
-onMounted(() => {
-    menuWidth.value = menu.value?.offsetWidth || 0
-    watch(() => menu.value?.offsetWidth, (newVal) => {
-        menuWidth.value = newVal!
-    })
-})
+
 
 
 // -----------------------------------------侧边栏路由处理-----------------------------------------

@@ -1,16 +1,19 @@
 <template>
     <div class="page">
-        <div class="menu">
-            <a-menu mode="pop" showCollapseButton :selected-keys="[projectsMenuKey]">
-                <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
-                    <template #icon>
-                        <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
-                        <icon-apps v-else />
-                    </template>
-                    {{ route.name }}
-                </a-menu-item>
-            </a-menu>
-        </div>
+        <a-affix :offset-top="60">
+            <div class="menu">
+                <a-menu mode="pop" showCollapseButton :selected-keys="[projectsMenuKey]">
+                    <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
+                        <template #icon>
+                            <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
+                            <icon-apps v-else />
+                        </template>
+                        {{ route.name }}
+                    </a-menu-item>
+                </a-menu>
+            </div>
+        </a-affix>
+
         <router-view />
     </div>
 </template>
