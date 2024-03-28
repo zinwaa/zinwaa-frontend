@@ -47,6 +47,17 @@
                             <span>li13702407250</span>
                         </div>
                     </div>
+                    <div class="contact-item">
+                        <div class="item">
+                            <svg data-v-23ac1662="" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                class="arco-icon arco-icon-email" stroke-width="4" stroke-linecap="butt"
+                                stroke-linejoin="miter">
+                                <rect x="6" y="8" width="36" height="32" rx="1"></rect>
+                                <path d="m37 17-12.43 8.606a1 1 0 0 1-1.14 0L11 17"></path>
+                            </svg>
+                            <span>zinwaa@foxmail.com</span>
+                        </div>
+                    </div>
                 </div>
                 <hr style="margin-bottom: 30px;">
                 <div class="jump">
@@ -273,6 +284,10 @@ watch(
                         width: 30px;
                         height: 30px;
                         transition: all 0.3s;
+
+                        rect {
+                            fill: rgb(94, 105, 255);
+                        }
 
                         path {
                             fill: rgb(94, 105, 255);
