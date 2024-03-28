@@ -63,6 +63,17 @@ let pages = [
               icon: 'icon-apps'
             }
           },
+          {
+            path: '/tools/clamp',
+            name: 'clamp',
+            component: () => import('@/views/tools/clamp.vue'),
+            meta: {
+              title: 'clamp函数',
+              headMenu: false,
+              asideMenu: true,
+              icon: 'icon-apps'
+            }
+          }
         ]
       }
     ]

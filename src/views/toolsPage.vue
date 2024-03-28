@@ -94,6 +94,7 @@ watch(
 
     .content {
         flex: 1;
+        z-index: 0;
     }
 }
 

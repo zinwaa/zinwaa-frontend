@@ -4,34 +4,18 @@
         <article class="article">
             <div class="article-header">
                 <h1 class="title">
-                    svg描边动画 SvgAnimation
+                    clamp函数 css
                 </h1>
             </div>
             <div class="article-content">
-                <section id="basic">
-                    <h2 class="title">基础用法</h2>
-                    <div class="demo">
-
-                    </div>
-                    <a-space class="code-btn">
-                        <a-tooltip :content="isShow ? '隐藏代码' : '显示代码'" popup-container=".btn">
-                            <a-button type="outline" shape="circle" @click="codeShow"
-                                class="btn"><icon-code /></a-button>
-                        </a-tooltip>
-                        <a-tooltip content="复制代码" popup-container=".btn">
-                            <a-button type="outline" shape="circle" @click="codeCopy"
-                                class="btn"><icon-copy /></a-button>
-                        </a-tooltip>
-                    </a-space>
-                    <div class="code" ref="code" style="height: 0px;">
-                        <pre><code class="language-css language-html language-ts">{{ toolsCode }}</code></pre>
-                    </div>
-                </section>
+                <toolSection v-for="section in sectionData" :key="section.id" :sectionData="section" />
             </div>
         </article>
         <a-affix :offsetTop="120">
             <a-anchor :style="{ backgroundColor: 'var(--color-bg-1)' }">
-                <a-anchor-link href="#basic">Basic</a-anchor-link>
+                <a-anchor-link :href="`#${section.id}`" v-for="section in sectionData">
+                    {{ section.title }}
+                </a-anchor-link>
             </a-anchor>
         </a-affix>
     </div>
@@ -39,70 +23,44 @@
 
 
 <script setup lang='ts'>
-import Prism from 'prismjs'
-import "@/assets/style/prism-base16-ateliersulphurpool.light.css"//高亮主题
-import { onMounted, ref } from 'vue'
-import { Message } from '@arco-design/web-vue';
-
-const isShow = ref(false)
-const code = ref<HTMLDivElement | null>(null)
-
-const codeShow = () => {
-    if (code.value) {
-        isShow.value = !isShow.value
-        let height = code.value.children[0].clientHeight
-        code.value && (code.value.style.height = code.value.style.height === "0px" ? `${height}px` : "0px")
+import toolSection from '@/components/toolSection.vue'
+const basicCode =
+    `<span style="font-size: clamp(12px, 1.5vw, 20px);">
+    自适应文字大小，最小值为12px，最大值为20px
+</span>`
+const fluidSizeCode = `<div style="width:clamp(300px,50vw,500px)">
+    <span>
+        300px <= {{ }} <=500px 
+    </span>
+</div>`
+const sectionData = [
+    {
+        id: 'basic',
+        title: '基础用法',
+        code: basicCode,
+        topTips: `<p class="tips">
+                        clamp函数一般情况下用于，需要文字大小能自适应视口，但vw等单位不适用的时候使用。
+                        <br>
+                        clamp函数的语法为：clamp(min, value, max);
+                        <br>
+                        其中min为最小值，value为当前值，max为最大值。
+                    </p>`
+    }, {
+        id: 'fluidSize',
+        title: '流体尺寸',
+        code: fluidSizeCode,
+        topTips: `<p class="tips">
+            响应式的页面原理就是根据不同设备大小渲染不同的CSS，而clamp函数也是根据VAL的大小，返回不同的值。
+            <br>
+            所以可以利用clamp函数来实现响应式布局。clamp可以实现容器宽度自适应，并能控制容器的极限值，这是百分比值没有的控制。
+        </p>`
     }
-}
+]
 
-//tips
-const tips = (status: 'success' | 'warning', message = '') => {
-    switch (status) {
-        case 'success':
-            Message.success({
-                content: message || '成功生成',
-                position: "top",
-            })
-            break;
-        case 'warning':
-            Message.warning({
-                content: message || '请输入必填字段',
-                position: "top",
-            })
-            break;
-    }
-}
-const codeCopy = () => {
-    if (navigator.clipboard && window.isSecureContext) {
-        // navigator clipboard 向剪贴板写文本
-        tips('success', '复制成功')
-        return navigator.clipboard.writeText(toolsCode);
-    } else {
-        // 创建text area
-        let textArea = document.createElement("textarea");
-        textArea.value = toolsCode;
-        // 使text area不在viewport，同时设置不可见
-        textArea.style.position = "absolute";
-        textArea.style.opacity = '0';
-        textArea.style.left = "-999999px";
-        textArea.style.top = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        return new Promise((res, rej) => {
-            // 执行复制命令并移除文本框
-            tips('success', '复制成功')
-            document.execCommand('copy') ? res(null) : rej();
-            textArea.remove();
-        });
-    }
-}
-onMounted(() => {
-    Prism.highlightAll();
-    setTimeout(() => Prism.highlightAll(), 100)
-})
-const toolsCode =
-    ``
+
+
+
+
 </script>
 
 
@@ -173,6 +131,13 @@ const toolsCode =
                     }
                 }
 
+            }
+
+            .tips {
+                line-height: 1.5;
+                display: block;
+                color: var(--color-text-2);
+                font-size: 14px;
             }
         }
 

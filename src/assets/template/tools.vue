@@ -1,37 +1,20 @@
-<!-- css clamp函数 -->
 <template>
     <div class="toolContainer">
         <article class="article">
             <div class="article-header">
                 <h1 class="title">
-                    svg描边动画 SvgAnimation
+                    <!-- 这是总title -->
                 </h1>
             </div>
             <div class="article-content">
-                <section id="basic">
-                    <h2 class="title">基础用法</h2>
-                    <div class="demo">
-
-                    </div>
-                    <a-space class="code-btn">
-                        <a-tooltip :content="isShow ? '隐藏代码' : '显示代码'" popup-container=".btn">
-                            <a-button type="outline" shape="circle" @click="codeShow"
-                                class="btn"><icon-code /></a-button>
-                        </a-tooltip>
-                        <a-tooltip content="复制代码" popup-container=".btn">
-                            <a-button type="outline" shape="circle" @click="codeCopy"
-                                class="btn"><icon-copy /></a-button>
-                        </a-tooltip>
-                    </a-space>
-                    <div class="code" ref="code" style="height: 0px;">
-                        <pre><code class="language-css language-html language-ts">{{ toolsCode }}</code></pre>
-                    </div>
-                </section>
+                <toolSection v-for="section in sectionData" :key="section.id" :sectionData="section" />
             </div>
         </article>
         <a-affix :offsetTop="120">
             <a-anchor :style="{ backgroundColor: 'var(--color-bg-1)' }">
-                <a-anchor-link href="#basic">Basic</a-anchor-link>
+                <a-anchor-link :href="`#${section.id}`" v-for="section in sectionData">
+                    {{ section.title }}
+                </a-anchor-link>
             </a-anchor>
         </a-affix>
     </div>
@@ -39,70 +22,15 @@
 
 
 <script setup lang='ts'>
-import Prism from 'prismjs'
-import "@/assets/style/prism-base16-ateliersulphurpool.light.css"//高亮主题
-import { onMounted, ref } from 'vue'
-import { Message } from '@arco-design/web-vue';
+import toolSection from '@/components/toolSection.vue'
 
-const isShow = ref(false)
-const code = ref<HTMLDivElement | null>(null)
-
-const codeShow = () => {
-    if (code.value) {
-        isShow.value = !isShow.value
-        let height = code.value.children[0].clientHeight
-        code.value && (code.value.style.height = code.value.style.height === "0px" ? `${height}px` : "0px")
-    }
-}
-
-//tips
-const tips = (status: 'success' | 'warning', message = '') => {
-    switch (status) {
-        case 'success':
-            Message.success({
-                content: message || '成功生成',
-                position: "top",
-            })
-            break;
-        case 'warning':
-            Message.warning({
-                content: message || '请输入必填字段',
-                position: "top",
-            })
-            break;
-    }
-}
-const codeCopy = () => {
-    if (navigator.clipboard && window.isSecureContext) {
-        // navigator clipboard 向剪贴板写文本
-        tips('success', '复制成功')
-        return navigator.clipboard.writeText(toolsCode);
-    } else {
-        // 创建text area
-        let textArea = document.createElement("textarea");
-        textArea.value = toolsCode;
-        // 使text area不在viewport，同时设置不可见
-        textArea.style.position = "absolute";
-        textArea.style.opacity = '0';
-        textArea.style.left = "-999999px";
-        textArea.style.top = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        return new Promise((res, rej) => {
-            // 执行复制命令并移除文本框
-            tips('success', '复制成功')
-            document.execCommand('copy') ? res(null) : rej();
-            textArea.remove();
-        });
-    }
-}
-onMounted(() => {
-    Prism.highlightAll();
-    setTimeout(() => Prism.highlightAll(), 100)
-})
-const toolsCode =
-    ``
+const domString = '<div>123123</div>';
+const sectionData = [{
+    id: 'basic', //id 唯一
+    title: '工具',
+    code: '1231231',
+    demo: domString,
+}]
 </script>
 
 
@@ -172,7 +100,13 @@ const toolsCode =
                         white-space: pre-wrap;
                     }
                 }
+            }
 
+            .tips {
+                line-height: 1.5;
+                display: block;
+                color: var(--color-text-2);
+                font-size: 14px;
             }
         }
 
