@@ -6,7 +6,6 @@
         </h2>
         <p class="tips topTips" v-if="props.sectionData.topTips">{{ props.sectionData.topTips }}</p>
         <div class="demo">
-            <!-- 展示 -->
         </div>
         <a-space class="code-btn">
             <a-tooltip :content="isShow ? '隐藏代码' : '显示代码'" popup-container=".btn">
@@ -42,6 +41,7 @@ const props = defineProps<{
         bottomTips?: string,
     }
 }>()
+const dynamicComponent = ref<string | null>('')
 onMounted(() => {
     let demo = document.getElementById(props.sectionData.id)?.getElementsByClassName('demo')[0] as HTMLElement
     let topTips = document.getElementById(props.sectionData.id)?.getElementsByClassName('topTips')[0] as HTMLElement
@@ -51,6 +51,7 @@ onMounted(() => {
     props.sectionData.bottomTips && (bottomTips.innerHTML = props.sectionData.bottomTips)
 
 })
+
 
 const isShow = ref(false)
 const code = ref<HTMLDivElement | null>(null)

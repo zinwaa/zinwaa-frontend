@@ -30,7 +30,7 @@ const basicCode = `
 </span>
 `
 const fluidSizeCode = `
-<div style="width:clamp(300px,50vw,500px);text-align:center;" @click="console.log(event)">
+<div style="width:clamp(200px,50vw,800px);text-align:center;background-color: aquamarine;" @click="asdf">
     300px <=  width  <=500px 
 </div>
 `
@@ -68,7 +68,6 @@ const sectionData = [
 <style scoped>
 .toolContainer {
     display: flex;
-    width: 100%;
     justify-content: space-between;
 
     .article {
