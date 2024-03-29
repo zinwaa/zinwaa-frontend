@@ -24,15 +24,16 @@
 
 <script setup lang='ts'>
 import toolSection from '@/components/toolSection.vue'
-const basicCode =
-    `<span style="font-size: clamp(12px, 1.5vw, 20px);">
+const basicCode = `
+<span style="font-size: clamp(12px, 1.5vw, 20px);">
     自适应文字大小，最小值为12px，最大值为20px
-</span>`
-const fluidSizeCode = `<div style="width:clamp(300px,50vw,500px)">
-    <span>
-        300px <= {{ }} <=500px 
-    </span>
-</div>`
+</span>
+`
+const fluidSizeCode = `
+<div style="width:clamp(300px,50vw,500px);text-align:center;" @click="console.log(event)">
+    300px <=  width  <=500px 
+</div>
+`
 const sectionData = [
     {
         id: 'basic',
@@ -88,63 +89,6 @@ const sectionData = [
                 font-weight: 500;
                 font-size: 36px;
             }
-        }
-
-        .article-content {
-            .title {
-                margin: 48px 0 12px;
-                color: var(--color-text-1);
-                font-weight: 500;
-                font-size: 20px;
-            }
-
-            .demo {
-                margin-top: 24px;
-                padding: 48px;
-                border: 1px solid var(--color-border);
-                border-radius: 2px 2px 0 0;
-                display: flex;
-                justify-content: center;
-                justify-content: space-evenly;
-            }
-
-            .code-btn {
-                display: flex;
-                justify-content: flex-end;
-                margin-top: 16px;
-            }
-
-            .code {
-                overflow-x: auto;
-                transition: height .2s;
-                margin-top: 16px;
-                overflow-y: hidden;
-
-                pre {
-                    padding: 28px 48px;
-                    transform: translateY(-20px);
-                    border-radius: 4px;
-
-                    code {
-                        padding: 0;
-                        white-space: pre-wrap;
-                    }
-                }
-
-            }
-
-            .tips {
-                line-height: 1.5;
-                display: block;
-                color: var(--color-text-2);
-                font-size: 14px;
-            }
-        }
-
-
-        .tool {
-            display: flex;
-            flex-direction: column;
         }
     }
 }

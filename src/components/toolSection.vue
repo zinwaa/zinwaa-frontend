@@ -138,14 +138,11 @@ onMounted(() => {
     overflow-y: hidden;
 
     pre {
-        padding: 28px 48px;
+        padding: 0px 48px;
         transform: translateY(-20px);
         border-radius: 4px;
 
-        code {
-            padding: 0;
-            white-space: pre-wrap;
-        }
+
     }
 }
 
