@@ -1,10 +1,10 @@
 <!-- css clamp函数 -->
 <template>
-    <section :id="props.sectionData.id">
+    <section :id="props.sectionData">
         <h2 class="title">
-            {{ props.sectionData.title }}
+            {{ component.title }}
         </h2>
-        <p class="tips topTips" v-if="props.sectionData.topTips">{{ props.sectionData.topTips }}</p>
+        <p class="tips topTips" v-if="component.topTips" v-html="component.topTips"></p>
         <div class="demo">
         </div>
         <a-space class="code-btn">
@@ -17,11 +17,10 @@
         </a-space>
         <div class="code" ref="code" style="height: 0px;">
             <pre><code class="language-html">
-                {{ props.sectionData.code }}
+                {{ component.code }}
             </code></pre>
         </div>
-        <p class="tips" v-if="props.sectionData.bottomTips">
-            {{ props.sectionData.bottomTips }}
+        <p class="tips" v-if="component.bottomTips" v-html="component.bottomTips">
         </p>
     </section>
 </template>
@@ -30,26 +29,40 @@
 <script setup lang='ts'>
 import Prism from 'prismjs'
 import "@/assets/style/prism-base16-ateliersulphurpool.light.css"//高亮主题
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import { Message } from '@arco-design/web-vue';
-const props = defineProps<{
-    sectionData: {
-        id: string,
-        code: string,
-        title: string,
-        topTips?: string,
-        bottomTips?: string,
-    }
-}>()
-const dynamicComponent = ref<string | null>('')
-onMounted(() => {
-    let demo = document.getElementById(props.sectionData.id)?.getElementsByClassName('demo')[0] as HTMLElement
-    let topTips = document.getElementById(props.sectionData.id)?.getElementsByClassName('topTips')[0] as HTMLElement
-    let bottomTips = document.getElementById(props.sectionData.id)?.getElementsByClassName('bottomTips')[0] as HTMLElement
-    demo.innerHTML = props.sectionData.code
-    props.sectionData.topTips && (topTips.innerHTML = props.sectionData.topTips)
-    props.sectionData.bottomTips && (bottomTips.innerHTML = props.sectionData.bottomTips)
 
+const props = defineProps<{
+    sectionData: string,
+}>()
+const component = reactive<{
+    name: string,
+    title: string,
+    code: string,
+    topTips?: string,
+    bottomTips?: string,
+}>({
+    name: '',
+    title: '',
+    code: '',
+    topTips: '',
+    bottomTips: '',
+})
+onMounted(() => {
+    const demo = document.getElementById(props.sectionData)?.getElementsByClassName('demo')[0] as HTMLElement
+    const importComponent = import(`@/components/toolSection/${props.sectionData}.vue`)
+    importComponent.then(res => {
+        if (res.default) {
+            const { name, title, topTips, bottomTips, code } = res.default
+            component.name = res.default
+            component.title = title
+            component.code = code
+            topTips && (component.topTips = topTips)
+            bottomTips && (component.bottomTips = bottomTips)
+
+            demo.innerHTML = code
+        }
+    })
 })
 
 
@@ -79,11 +92,11 @@ const codeCopy = () => {
     if (navigator.clipboard && window.isSecureContext) {
         // navigator clipboard 向剪贴板写文本
         tips('success', '复制成功')
-        return navigator.clipboard.writeText(props.sectionData.code);
+        return navigator.clipboard.writeText(component.code);
     } else {
         // 创建text area
         let textArea = document.createElement("textarea");
-        textArea.value = props.sectionData.code;
+        textArea.value = component.code;
         // 使text area不在viewport，同时设置不可见
         textArea.style.position = "absolute";
         textArea.style.opacity = '0';

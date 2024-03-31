@@ -8,7 +8,7 @@
                 </h1>
             </div>
             <div class="article-content">
-                <toolSection v-for="section in sectionData" :key="section.id" :sectionData="section" />
+                <toolSection v-for="section in sectionData" :key="section.id" :sectionData="section.id" />
             </div>
         </article>
         <a-affix :offsetTop="120">
@@ -24,37 +24,14 @@
 
 <script setup lang='ts'>
 import toolSection from '@/components/toolSection.vue'
-const basicCode = `
-<span style="font-size: clamp(12px, 1.5vw, 20px);">
-    自适应文字大小，最小值为12px，最大值为20px
-</span>
-`
-const fluidSizeCode = `
-<div style="width:clamp(200px,50vw,800px);text-align:center;background-color: aquamarine;" @click="asdf">
-    300px <=  width  <=500px 
-</div>
-`
+
 const sectionData = [
     {
-        id: 'basic',
+        id: 'clampBasic',
         title: '基础用法',
-        code: basicCode,
-        topTips: `<p class="tips">
-                        clamp函数一般情况下用于，需要文字大小能自适应视口，但vw等单位不适用的时候使用。
-                        <br>
-                        clamp函数的语法为：clamp(min, value, max);
-                        <br>
-                        其中min为最小值，value为当前值，max为最大值。
-                    </p>`
     }, {
-        id: 'fluidSize',
+        id: 'clampFluidSize',
         title: '流体尺寸',
-        code: fluidSizeCode,
-        topTips: `<p class="tips">
-            响应式的页面原理就是根据不同设备大小渲染不同的CSS，而clamp函数也是根据VAL的大小，返回不同的值。
-            <br>
-            所以可以利用clamp函数来实现响应式布局。clamp可以实现容器宽度自适应，并能控制容器的极限值，这是百分比值没有的控制。
-        </p>`
     }
 ]
 
