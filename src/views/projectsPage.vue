@@ -16,11 +16,13 @@
 
         <router-view />
     </div>
+    <beian />
 </template>
 
 
 <script setup lang='ts'>
 import { onMounted, ref, watch } from 'vue';
+import beian from '@/components/beian.vue'
 
 //-----------------------------------------侧边栏路由处理-----------------------------------------
 import { useRoute, useRouter } from 'vue-router';
@@ -89,6 +91,7 @@ watch(
 .page {
     display: flex;
     margin-right: 40px;
+    min-height: 100vh;
 }
 
 .menu {

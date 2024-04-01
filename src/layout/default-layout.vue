@@ -18,7 +18,6 @@
     <div class="PageBody">
         <router-view />
     </div>
-
 </template>
 <script lang="ts">
 import _ from 'lodash'
@@ -62,8 +61,16 @@ export default defineComponent({
         $route(to, from) {
             this.defaultSelectedKeys = [to.matched[1]?.name as RouteRecordName]
         }
+    },
+    setup() {
+        onMounted(() => {
+            console.log(window.innerHeight);
+
+        })
     }
 })
+
+
 </script>
 <style scoped lang="less">
 .menu-demo {
@@ -80,7 +87,6 @@ export default defineComponent({
 .PageBody {
     height: 100%;
     min-height: 100vh;
-    height: auto;
     padding-top: 58px;
     position: relative;
     z-index: -10;
@@ -114,5 +120,10 @@ export default defineComponent({
         fill: white;
         animation: icon 3s forwards linear;
     }
+}
+
+.footer {
+    position: relative;
+    bottom: 0;
 }
 </style>

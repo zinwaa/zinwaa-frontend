@@ -142,8 +142,7 @@
                     </div>
                 </card>
             </div>
-            <div class="footer" style="height: 100px;">
-            </div>
+            <beian />
         </div>
     </div>
 </template>
@@ -158,6 +157,7 @@ import ghost from '@/components/ghost.vue'
 import block from '@/components/block.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { globalData, type TSkill, type IGlobalData } from '@/assets/data'
+import beian from '@/components/beian.vue'
 
 const container = ref<HTMLElement | null>(null)
 const skill = ref<HTMLElement | null>(null)

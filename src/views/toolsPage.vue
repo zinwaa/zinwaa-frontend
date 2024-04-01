@@ -17,12 +17,13 @@
             <router-view />
         </div>
     </div>
+    <beian />
 </template>
 
 
 <script setup lang='ts'>
 import { onMounted, watch, ref } from 'vue';
-
+import beian from '@/components/beian.vue'
 
 
 
@@ -91,6 +92,7 @@ watch(
 .page {
     display: flex;
     margin-right: 40px;
+    min-height: 100vh;
 
     .content {
         flex: 1;
