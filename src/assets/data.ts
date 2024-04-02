@@ -8,7 +8,7 @@ export interface IGlobalData {
     projects: {
         name: string;
         skills: TSkill[];
-        description: string;
+        description: string[];
         link: string;
         img?: string;
     }[];
@@ -38,16 +38,24 @@ export const globalData: IGlobalData = {
         {
             name: 'sqlCreate',
             skills: ['Vue3', 'Less', 'TypeScript', 'ArcoDesign'],
-            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
+            description: [
+                '该项⽬是⼀个通过填写可视化表单快速⽣成可直接使⽤的SQL语句的⼯具，有效提⾼⼯作效率。',
+                '该项⽬通过vue3为前端框架，采⽤vue-cli构建vue项⽬，利⽤HTML5、CSS3等各种技术以组件化开发成 响应式单⻚。',
+                '项⽬可通过多种⽅式快速⽣成表单，经过简单修改后，通过js动态获取表单信息，拼接⽣成可直接使⽤的 SQL语句。'
+            ],
             link: 'sqlCreate',
         },
     ],
     tools: [
         {
             name: 'svgAnimation',
-            description: '项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述项目1描述',
+            description: 'svg 的描边动画',
             link: 'svgAnimation'
-        },
+        }, {
+            name: 'clamp',
+            description: '当文字大小能自适应视口，但vw等单位不适用的时候可使用clamp css函数。',
+            link: 'clamp'
+        }
     ]
 }
 interface IWebsiteData {
@@ -56,7 +64,7 @@ interface IWebsiteData {
     content: string;
     status: 'success' | 'doing' | 'todo' | 'failed';
 }
-const websiteData: IWebsiteData[] = [
+export const websiteData: IWebsiteData[] = [
     {
         time: '2023/12/19',
         title: '建文件夹',
@@ -92,5 +100,15 @@ const websiteData: IWebsiteData[] = [
         title: '备案',
         content: '提交备案',
         status: 'success'
-    },
+    }, {
+        time: '2024/3/28',
+        title: '小工具',
+        content: '增加了两个工具：svg的描边动画和clamp函数的笔记',
+        status: 'success'
+    }, {
+        time: '2024/4/1',
+        title: '备案',
+        content: '备案通过',
+        status: 'success'
+    }
 ]

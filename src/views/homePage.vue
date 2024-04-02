@@ -116,7 +116,9 @@
                             </div>
                             <div class="projectDescription">
                                 <span>项目简介：</span>
-                                <span>{{ item.description }}</span>
+                                <div v-for="(description, index) of item.description" style="padding: 3px 0;">
+                                    <span>{{ index + 1 }}. </span><span>{{ description }}</span>
+                                </div>
                             </div>
                             <div class="projectLink">
                                 <a-link icon :hoverable="false"
@@ -128,8 +130,8 @@
             </div>
             <span class="title" ref="tool"><icon-tool />Tools</span>
             <div class="tools">
-                <card :width="490" style="height: 100%">
-                    <div class="tool" v-for="item in data.tools">
+                <card :width="490" style="height: 100%" v-for="item in data.tools">
+                    <div class="tool">
                         <div class="toolName">
                             <span>{{ item.name }} :</span>
                         </div>
@@ -141,6 +143,32 @@
                         </div>
                     </div>
                 </card>
+            </div>
+            <span class="title"><icon-schedule />history</span>
+            <div>
+                <a-space>
+                    <a-tag checkable :color="timelineDotColor('success')">已完成</a-tag>
+                    <a-tag checkable :color="timelineDotColor('doing')" :default-checked="true">正在做</a-tag>
+                    <a-tag checkable :color="timelineDotColor('todo')" :default-checked="true">将要做</a-tag>
+                    <a-tag checkable :color="timelineDotColor('failed')" :default-checked="true">饼画大了</a-tag>
+                </a-space>
+            </div>
+            <div class="history">
+                <a-timeline direction="horizontal" :mode="'bottom'" class="timeline">
+                    <a-timeline-item v-for="(websiteitem, index) of websiteData"
+                        style="min-width: 150px; padding-right: 20px;"
+                        :dot-color="timelineDotColor(websiteitem.status)">
+                        <template #label>
+                            <span>{{ websiteitem.time }}</span>
+                        </template>
+                        <div :style="{ marginBottom: '12px' }">
+                            {{ websiteitem.title }}
+                            <div :style="{ fontSize: '12px', color: '#4E5969' }" class="content">
+                                {{ websiteitem.content }}
+                            </div>
+                        </div>
+                    </a-timeline-item>
+                </a-timeline>
             </div>
             <beian />
         </div>
@@ -156,7 +184,7 @@ import { reactive, ref, watch } from 'vue'
 import ghost from '@/components/ghost.vue'
 import block from '@/components/block.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { globalData, type TSkill, type IGlobalData } from '@/assets/data'
+import { globalData, type TSkill, type IGlobalData, websiteData } from '@/assets/data'
 import beian from '@/components/beian.vue'
 
 const container = ref<HTMLElement | null>(null)
@@ -166,6 +194,21 @@ const project = ref<HTMLElement | null>(null)
 
 // 网页数据
 const data = reactive<IGlobalData>(globalData)
+
+//网站时间轴节点颜色
+const timelineDotColor = (status: string) => {
+    switch (status) {
+        case 'success':
+            return '#52c41a';
+        case 'doing':
+            return '#1890ff';
+        case 'todo':
+            return '#faad14';
+        default:
+            return '#f5222d';
+    }
+}
+
 
 // 获取标签颜色
 import { tagColor } from "@/assets/style/tagColor";
@@ -444,6 +487,20 @@ watch(
                 }
 
             }
+        }
+
+        .history {
+            .timeline {
+                //超出容器宽度时，会自动折叠
+                overflow-x: auto;
+                padding-bottom: 100px;
+
+                .content {
+                    position: absolute;
+                    margin-top: 80px;
+                }
+            }
+
         }
     }
 }
