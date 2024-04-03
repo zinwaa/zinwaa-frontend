@@ -61,12 +61,6 @@ export default defineComponent({
         $route(to, from) {
             this.defaultSelectedKeys = [to.matched[1]?.name as RouteRecordName]
         }
-    },
-    setup() {
-        onMounted(() => {
-            console.log(window.innerHeight);
-
-        })
     }
 })
 

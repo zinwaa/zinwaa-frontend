@@ -4,7 +4,7 @@
         <a-affix class="zinwaaInfo" :offset-top="35">
             <card>
                 <div class="info">
-                    <a-avatar :image-url="data.info.avatarUrl" :size="80" />
+                    <a-avatar :image-url="image(data.info.avatarUrl)" :size="80" />
                     <div>
                         <span>ZinWaa</span>
                     </div>
@@ -74,7 +74,7 @@
                     <span class="welcome">HI MY NEW FRIEND!</span>
                     <div class="welcome">
                         <div class="avatar">
-                            <a-avatar :image-url="data.info.avatarUrl" :size="130" />
+                            <a-avatar :image-url="image(data.info.avatarUrl)" :size="130" />
                         </div>
                         <div>
                             <span class="title">HELLO</span>
@@ -186,7 +186,7 @@ import block from '@/components/block.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { globalData, type TSkill, type IGlobalData, websiteData } from '@/assets/data'
 import beian from '@/components/beian.vue'
-
+import { image } from '@/utils/image'
 const container = ref<HTMLElement | null>(null)
 const skill = ref<HTMLElement | null>(null)
 const tool = ref<HTMLElement | null>(null)

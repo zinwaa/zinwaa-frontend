@@ -20,7 +20,7 @@ export interface IGlobalData {
 }
 export const globalData: IGlobalData = {
     info: {
-        avatarUrl: '/public/img/avatar.png'
+        avatarUrl: 'avatar.png'
     },
     skills: [
         'HTML',

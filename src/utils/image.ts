@@ -1,0 +1,1 @@
+export const image = (url: string) => new URL(`/static/img/${url}`, import.meta.url).href
