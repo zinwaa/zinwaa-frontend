@@ -33,7 +33,7 @@
                             </template>
                             <a-input v-model="form.tableComments" placeholder="描述表的中文名称、作用等" />
                         </a-form-item>
-                        <div v-for="item, i in form.tableFields" :key="symbol(i)" class="fieldCard"
+                        <div v-for="item, i in  form.tableFields " :key="symbol(i)" class="fieldCard"
                             style="margin-bottom: 10px;">
                             <a-collapse :default-active-key="collapseActive" @change="collapseChange(i)">
                                 <a-collapse-item :key="i">
@@ -54,92 +54,112 @@
                                         </a-button>
                                     </template>
                                     <div class="fieldContent">
-                                        <a-row :gutter="16">
-                                            <a-col :span="10">
-                                                <a-form-item :field="`tableFields[${i}].type`" label-col-flex="78px"
-                                                    :rules="[{ required: true, message: '请输入字段类型' }]">
-                                                    <template #label>
-                                                        <span class="label">字段类型</span>
-                                                    </template>
-                                                    <a-select :style="{ width: '320px' }" placeholder="请输入字段类型"
-                                                        style="background-color: #fff;" allow-search v-model="item.type"
-                                                        class="inputBox">
-                                                        <a-option>TINYINT</a-option>
-                                                        <a-option>SMALLINT</a-option>
-                                                        <a-option>MEDIUMINT</a-option>
-                                                        <a-option>INT</a-option>
-                                                        <a-option>BIGINT</a-option>
-                                                        <a-option>FLOAT</a-option>
-                                                        <a-option>DOUBLE</a-option>
-                                                        <a-option>DECIMAL</a-option>
-                                                        <a-option>DATE</a-option>
-                                                        <a-option>TIME</a-option>
-                                                        <a-option>DATETIME</a-option>
-                                                        <a-option>TIMESTAMP</a-option>
-                                                        <a-option>YEAR</a-option>
-                                                        <a-option>TINYTEXT</a-option>
-                                                        <a-option>TEXT</a-option>
-                                                        <a-option>MEDIUMTEXT</a-option>
-                                                        <a-option>LONGTEXT</a-option>
-                                                        <a-option>TINYBLOB</a-option>
-                                                        <a-option>BLOB</a-option>
-                                                        <a-option>MEDIUMBLOB</a-option>
-                                                        <a-option>LONGBLOB</a-option>
-                                                        <a-option>ENUM</a-option>
-                                                        <a-option>SET</a-option>
-                                                    </a-select>
-                                                </a-form-item>
-                                            </a-col>
-                                            <a-col :span="9">
-                                                <a-form-item :field="`tableFields[${i}].defaultValue`"
-                                                    label-col-flex="50px">
-                                                    <template #label>
-                                                        <span class="label">默认值</span>
-                                                    </template>
-                                                    <a-input v-model="item.defaultValue" placeholder="要和字段类型匹配"
-                                                        class="inputBox" />
-                                                </a-form-item>
-                                            </a-col>
-                                            <a-col :span="8">
-                                                <a-form-item :field="`tableFields[${i}].comment`" label-col-flex="36px">
-                                                    <template #label>
-                                                        <span class="label">注释</span>
-                                                    </template>
-                                                    <a-input v-model="item.comment" placeholder="请输入字段注释"
-                                                        class="inputBox" />
-                                                </a-form-item>
-                                            </a-col>
-                                            <a-col :span="10">
-                                                <a-form-item :field="`tableFields[${i}].onUpdate`"
-                                                    label-col-flex="75px">
-                                                    <template #label>
-                                                        <span class="label">onUpdate</span>
-                                                    </template>
-                                                    <a-select placeholder="字段更新动作" allow-clear v-model="item.onUpdate"
-                                                        class="inputBox" style="background-color: #fff;">
-                                                        <a-option>CURRENT_TIMESTAMP</a-option>
-                                                    </a-select>
-                                                </a-form-item>
-                                            </a-col>
-                                            <a-col :span="4">
-                                                <a-form-item :field="`tableFields[${i}].isPrimary`"
-                                                    label-col-flex="0px">
-                                                    <a-checkbox v-model="item.notNull">非空</a-checkbox>
-                                                </a-form-item>
-                                            </a-col>
-                                            <a-col :span="4" style="transform: translateX(-20px);">
-                                                <a-form-item :field="`tableFields[${i}].isAutoIncrement`"
-                                                    label-col-flex="0px">
-                                                    <a-checkbox v-model="item.isPrimary">主键</a-checkbox>
-                                                </a-form-item>
-                                            </a-col>
-                                            <a-col :span="4" style="transform: translateX(-20px);">
-                                                <a-form-item :field="`tableFields[${i}].isAutoIncrement`"
-                                                    label-col-flex="0px">
-                                                    <a-checkbox v-model="item.isAutoIncrement">自增</a-checkbox>
-                                                </a-form-item>
-                                            </a-col>
-                                        </a-row>
+                                        <a-form-item :field="`tableFields[${i}].type`" label-col-flex="78px"
+                                            :rules="[{ required: true, message: '请输入字段类型' }]" class="fieldListBox"
+                                            id="type">
+                                            <template #label>
+                                                <span class="label">字段类型</span>
+                                            </template>
+                                            <a-select :style="{ width: '320px' }" placeholder="请输入字段类型"
+                                                style="background-color: #fff;" allow-search v-model="item.type"
+                                                class="inputBox" :trigger-props="{ updateAtScroll: true }">
+                                                <a-option>TINYINT</a-option>
+                                                <a-option>SMALLINT</a-option>
+                                                <a-option>MEDIUMINT</a-option>
+                                                <a-option>INT</a-option>
+                                                <a-option>BIGINT</a-option>
+                                                <a-option>FLOAT</a-option>
+                                                <a-option>DOUBLE</a-option>
+                                                <a-option>DECIMAL</a-option>
+                                                <a-option>DATE</a-option>
+                                                <a-option>TIME</a-option>
+                                                <a-option>DATETIME</a-option>
+                                                <a-option>TIMESTAMP</a-option>
+                                                <a-option>YEAR</a-option>
+                                                <a-option>TINYTEXT</a-option>
+                                                <a-option>TEXT</a-option>
+                                                <a-option>MEDIUMTEXT</a-option>
+                                                <a-option>LONGTEXT</a-option>
+                                                <a-option>TINYBLOB</a-option>
+                                                <a-option>BLOB</a-option>
+                                                <a-option>MEDIUMBLOB</a-option>
+                                                <a-option>LONGBLOB</a-option>
+                                                <a-option>ENUM</a-option>
+                                                <a-option>SET</a-option>
+                                            </a-select>
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].defaultValue`" label-col-flex="50px"
+                                            class="fieldListBox" id="defaultValue">
+                                            <template #label>
+                                                <span class="label">默认值</span>
+                                            </template>
+                                            <a-input v-model="item.defaultValue" placeholder="要和字段类型匹配"
+                                                class="inputBox" />
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].comment`" label-col-flex="36px"
+                                            class="fieldListBox" id="comment">
+                                            <template #label>
+                                                <span class="label">注释</span>
+                                            </template>
+                                            <a-input v-model="item.comment" placeholder="请输入字段注释" class="inputBox" />
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].onUpdate`" label-col-flex="75px"
+                                            class="fieldListBox" id="onUpdate">
+                                            <template #label>
+                                                <span class="label">onUpdate</span>
+                                            </template>
+                                            <a-select placeholder="字段更新动作" allow-clear v-model="item.onUpdate"
+                                                class="inputBox" style="background-color: #fff;"
+                                                :trigger-props="{ updateAtScroll: true }">
+                                                <a-option>CURRENT_TIMESTAMP</a-option>
+                                            </a-select>
+
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].notNull`" label-col-flex="0px"
+                                            class="fieldListBox" style="width: 80px;" id="notNull">
+                                            <a-checkbox v-model="item.notNull">非空</a-checkbox>
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].isPrimary`" label-col-flex="0px"
+                                            class="fieldListBox" style="width: 80px;" id="isPrimary">
+                                            <a-checkbox v-model="item.isPrimary">主键</a-checkbox>
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].isAutoIncrement`" label-col-flex="0px"
+                                            class="fieldListBox" style="width: 80px;" id="isAutoIncrement">
+                                            <a-checkbox v-model="item.isAutoIncrement">自增</a-checkbox>
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].fakeDataType`" label-col-flex="78px"
+                                            :rules="[{ required: true, message: '不可为空' }]" class="fieldListBox"
+                                            id="fakeDataType">
+                                            <template #label>
+                                                <span class="label">模拟类型</span>
+                                            </template>
+                                            <a-select :style="{ width: '400px' }" placeholder="模拟数据类型"
+                                                style="background-color: #fff;" v-model="item.fakeDataType"
+                                                class="inputBox" :trigger-props="{ updateAtScroll: true }">
+                                                <a-option v-for="value of Object.keys(fakeDataOptions)" :key="value">
+                                                    {{ value }}
+                                                </a-option>
+                                            </a-select>
+                                        </a-form-item>
+                                        <a-form-item :field="`tableFields[${i}].fakeData`" label-col-flex="78px"
+                                            :rules="[{ required: true, message: '不可为空' }]" class="fieldListBox"
+                                            v-if="fakeDataOptions[item.fakeDataType]" id="fakeData">
+                                            <template #label>
+                                                <span class="label">模拟数据</span>
+                                            </template>
+                                            <a-select :style="{ width: '400px' }"
+                                                :placeholder="`请输入${item.fakeDataType}`" style="background-color: #fff;"
+                                                v-model="item.fakeData" class="inputBox"
+                                                v-if="Array.isArray(fakeDataOptions[item.fakeDataType])"
+                                                :trigger-props="{ updateAtScroll: true }">
+                                                <a-option v-for="value of fakeDataOptions[item.fakeDataType]"
+                                                    :key="value">{{ value
+                                                    }}</a-option>
+                                            </a-select>
+                                            <a-input :style="{ width: '400px' }"
+                                                :placeholder="`请输入${item.fakeDataType}`" style="background-color: #fff;"
+                                                v-model="item.fakeData" class="inputBox" v-else></a-input>
+                                        </a-form-item>
                                     </div>
                                 </a-collapse-item>
                             </a-collapse>
@@ -175,6 +195,9 @@
                 </a-collapse>
             </div>
         </div>
+        <a-select placeholder="字段更新动作" allow-clear class="inputBox" style="background-color: #fff;">
+            <a-option>CURRENT_TIMESTAMP</a-option>
+        </a-select>
     </div>
     <div>
         <a-modal v-model:visible="intelligentInputVisible" :title-align="'start'" class="windows" :footer="false">
@@ -197,6 +220,7 @@
             </div>
         </a-modal>
     </div>
+
 </template>
 
 
@@ -219,6 +243,8 @@ interface Form {
         isPrimary: boolean;
         notNull: boolean;
         isAutoIncrement: boolean;
+        fakeDataType: '不模拟' | '固定值' | '随机值' | '正则表达式';
+        fakeData: string;
     }[];
 }
 const form = reactive<Form>({
@@ -235,6 +261,8 @@ const form = reactive<Form>({
             isPrimary: true,
             notNull: false,
             isAutoIncrement: true,
+            fakeDataType: '不模拟',
+            fakeData: '',
         },
     ]
 })
@@ -313,6 +341,8 @@ const addField = () => {
         isPrimary: true,
         notNull: false,
         isAutoIncrement: true,
+        fakeDataType: '不模拟',
+        fakeData: '',
     })
 }
 
@@ -355,6 +385,8 @@ const intelligentInputOk = (data: {
                 isPrimary: false,
                 notNull: false,
                 isAutoIncrement: false,
+                fakeDataType: '不模拟',
+                fakeData: '',
             })
         }
     })
@@ -460,6 +492,18 @@ async function copySQL() {
     }
 }
 
+// 模拟数据部分
+import { fakerZH_CN } from '@faker-js/faker';
+const fakeDataOptions: { '不模拟': false, '固定值': string, '随机值': Array<string>, '正则表达式': string } = {
+    '不模拟': false,
+    '固定值': '请输入固定值',
+    '随机值': ['人名', '手机号', '地址', '邮箱', '日期', '随机字符串', '随机数字', '随机布尔值'],
+    '正则表达式': '请输入正则表达式'
+}
+console.log(fakerZH_CN.person.fullName());
+
+
+
 </script>
 
 
@@ -503,6 +547,17 @@ async function copySQL() {
 
                     .fieldContent {
                         margin-top: 10px;
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: flex-start;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        align-content: flex-start;
+                        column-gap: 30px;
+
+                        .fieldListBox {
+                            width: 250px;
+                        }
 
                         .inputBox {
                             background-color: #fff;
