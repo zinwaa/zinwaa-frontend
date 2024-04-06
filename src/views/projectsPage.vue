@@ -112,12 +112,11 @@ watch(
 .page {
     display: flex;
     margin-right: 40px;
-    min-height: 100vh;
 }
 
 .menu {
     width: 100%;
-    height: 600px;
+    height: 90%;
     padding: 40px;
     box-sizing: border-box;
     flex: 0;
@@ -156,7 +155,7 @@ watch(
 
 .menu .arco-menu.arco-menu-collapsed {
     width: 48px;
-    height: auto;
+    height: 100%;
     padding-top: 24px;
     padding-bottom: 138px;
     border-radius: 22px;

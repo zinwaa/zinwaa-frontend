@@ -62,7 +62,7 @@
                                             </template>
                                             <a-select :style="{ width: '320px' }" placeholder="请输入字段类型"
                                                 style="background-color: #fff;" allow-search v-model="item.type"
-                                                class="inputBox" :trigger-props="{ updateAtScroll: true }">
+                                                class="inputBox" popup-container="#type">
                                                 <a-option>TINYINT</a-option>
                                                 <a-option>SMALLINT</a-option>
                                                 <a-option>MEDIUMINT</a-option>
@@ -110,7 +110,7 @@
                                             </template>
                                             <a-select placeholder="字段更新动作" allow-clear v-model="item.onUpdate"
                                                 class="inputBox" style="background-color: #fff;"
-                                                :trigger-props="{ updateAtScroll: true }">
+                                                popup-container="#onUpdate">
                                                 <a-option>CURRENT_TIMESTAMP</a-option>
                                             </a-select>
 
@@ -135,7 +135,7 @@
                                             </template>
                                             <a-select :style="{ width: '400px' }" placeholder="模拟数据类型"
                                                 style="background-color: #fff;" v-model="item.fakeDataType"
-                                                class="inputBox" :trigger-props="{ updateAtScroll: true }">
+                                                class="inputBox" popup-container="#fakeDataType">
                                                 <a-option v-for="value of Object.keys(fakeDataOptions)" :key="value">
                                                     {{ value }}
                                                 </a-option>
@@ -151,7 +151,7 @@
                                                 :placeholder="`请输入${item.fakeDataType}`" style="background-color: #fff;"
                                                 v-model="item.fakeData" class="inputBox"
                                                 v-if="Array.isArray(fakeDataOptions[item.fakeDataType])"
-                                                :trigger-props="{ updateAtScroll: true }">
+                                                popup-container="#fakeData">
                                                 <a-option v-for="value of fakeDataOptions[item.fakeDataType]"
                                                     :key="value">{{ value
                                                     }}</a-option>
@@ -195,9 +195,7 @@
                 </a-collapse>
             </div>
         </div>
-        <a-select placeholder="字段更新动作" allow-clear class="inputBox" style="background-color: #fff;">
-            <a-option>CURRENT_TIMESTAMP</a-option>
-        </a-select>
+
     </div>
     <div>
         <a-modal v-model:visible="intelligentInputVisible" :title-align="'start'" class="windows" :footer="false">
@@ -557,6 +555,7 @@ console.log(fakerZH_CN.person.fullName());
 
                         .fieldListBox {
                             width: 250px;
+                            position: relative;
                         }
 
                         .inputBox {
