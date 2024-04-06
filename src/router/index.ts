@@ -38,7 +38,31 @@ let pages = [
               headMenu: false,
               asideMenu: true,
               icon: 'icon-apps'
-            }
+            },
+            // children: [
+            //   {
+            //     path: '/projects/sqlCreate',
+            //     name: 'sqlCreate',
+            //     component: () => import('@/views/projects/sqlCreate.vue'),
+            //     meta: {
+            //       title: 'SQL语句生成器',
+            //       headMenu: false,
+            //       asideMenu: true,
+            //       icon: 'icon-apps'
+            //     }
+            //   },
+            //   {
+            //     path: '/projects/sqlCreate/sqlCreate2',
+            //     name: 'sqlCreate2',
+            //     component: () => import('@/views/projects/sqlCreate.vue'),
+            //     meta: {
+            //       title: 'SQL语句生成器2',
+            //       headMenu: false,
+            //       asideMenu: true,
+            //       icon: 'icon-apps'
+            //     }
+            //   },
+            // ]
           },
         ]
       },

@@ -2,14 +2,29 @@
     <div class="page">
         <a-affix :offset-top="60">
             <div class="menu">
-                <a-menu mode="pop" showCollapseButton :selected-keys="[projectsMenuKey]">
-                    <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">
-                        <template #icon>
-                            <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
-                            <icon-apps v-else />
-                        </template>
-                        {{ route.name }}
-                    </a-menu-item>
+                <a-menu showCollapseButton :selected-keys="[projectsMenuKey]">
+                    <div v-for="route in routes">
+                        <a-menu-item :key="route.name" @click="$router.push(route.path)"
+                            v-if="route.children?.length === 0">
+                            <template #icon>
+                                <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
+                                <icon-apps v-else />
+                            </template>
+                            {{ route.name }}
+                        </a-menu-item>
+
+                        <a-sub-menu :key="route.name" v-if="route.children?.length !== 0">
+                            <template #icon>
+                                <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
+                                <icon-apps v-else />
+                            </template>
+                            <template #title>{{ route.name }}</template>
+                            <a-menu-item v-for="child in route.children" :key="child.name"
+                                @click="$router.push(child.path)">
+                                {{ child.name }}
+                            </a-menu-item>
+                        </a-sub-menu>
+                    </div>
                 </a-menu>
             </div>
         </a-affix>
@@ -35,6 +50,7 @@ interface MenuItem {
         title: string;
         icon?: string | null;
     };
+    children?: MenuItem[];
 }
 
 // 声明响应式状态
@@ -44,8 +60,12 @@ const routes = ref<MenuItem[]>([]);
 
 // 获取菜单路由
 function getMenuRoutes(routesList: RouteRecordRaw[]): MenuItem[] {
-    const creativeCenterPageChildren = routesList.find((route) => route.name === 'dashboard')?.children?.find((route) => route.name === 'projects')?.children ?? [];
-
+    let creativeCenterPageChildren: RouteRecordRaw[] = [];
+    if (routesList.find((route) => route.name === 'dashboard')) {
+        creativeCenterPageChildren = routesList.find((route) => route.name === 'dashboard')?.children?.find((route) => route.name === 'projects')?.children ?? [];
+    } else {
+        creativeCenterPageChildren = routesList
+    }
     return creativeCenterPageChildren
         .filter((route) => route.meta && route.meta.asideMenu)
         .map((route) => ({
@@ -55,6 +75,7 @@ function getMenuRoutes(routesList: RouteRecordRaw[]): MenuItem[] {
                 title: route.meta?.title,
                 icon: route.meta?.icon ?? null,
             },
+            children: route.children ? getMenuRoutes(route.children) : [],
         }) as MenuItem);
 }
 
