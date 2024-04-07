@@ -110,5 +110,10 @@ export const websiteData: IWebsiteData[] = [
         title: '备案',
         content: '备案通过',
         status: 'success'
+    }, {
+        time: '2024/4/7',
+        title: 'v0.0.3',
+        content: '增加sql语句生成的生成插入语句功能',
+        status: 'success'
     }
 ]
