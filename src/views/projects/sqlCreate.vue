@@ -33,9 +33,18 @@
                             </template>
                             <a-input v-model="form.tableComments" placeholder="描述表的中文名称、作用等" />
                         </a-form-item>
+                        <a-form-item field="tableComments" validate-trigger="change"
+                            :rules="[{ required: false, message: '请输入生成条数', min: 1, max: 100 }]">
+                            <template #label>
+                                <span class="label">生成条数</span>
+                            </template>
+                            <a-input-number :style="{ width: '100px' }" placeholder="生成条数" :min="1" :max="100"
+                                v-model="form.num" />
+                        </a-form-item>
                         <div v-for="item, i in  form.tableFields " :key="symbol(i)" class="fieldCard"
                             style="margin-bottom: 10px;">
-                            <a-collapse :default-active-key="collapseActive" @change="collapseChange(i)">
+                            <a-collapse :default-active-key="collapseActive" @change="collapseChange(i)"
+                                destroy-on-hide>
                                 <a-collapse-item :key="i">
                                     <template #header>
                                         <a-form-item :label-col-style="{ width: '60px' }" class="fieldTitle"
@@ -151,7 +160,7 @@
                                                 :placeholder="`请输入${item.fakeDataType}`" style="background-color: #fff;"
                                                 v-model="item.fakeData" class="inputBox"
                                                 v-if="Array.isArray(fakeDataOptions[item.fakeDataType])"
-                                                popup-container="#fakeData">
+                                                :trigger-props="{ updateAtScroll: true }" popup-container="#fakeData">
                                                 <a-option v-for="value of fakeDataOptions[item.fakeDataType]"
                                                     :key="value">{{ value
                                                     }}</a-option>
@@ -184,12 +193,23 @@
                 <span>输出结果</span>
             </div>
             <div class="content">
-                <a-collapse style="height: 100%;">
-                    <a-collapse-item header="建表语句" key="1">
+                <a-collapse style="height: 100%;" :default-active-key="['1']">
+                    <a-collapse-item header="建表语句" key="1" style="max-height: 500px;" class="buildSQLBox">
                         <template #extra>
-                            <span style="font-size: 12px;" @click.stop="copySQL"><icon-copy /> 复制</span>
+                            <span style="font-size: 12px;" @click.stop="copySQL('buildSQL')"><icon-copy /> 复制</span>
                         </template>
-                        <pre v-if="result" ref="sqlPre">{{ result.value }}</pre>
+                        <pre v-if="result" ref="buildSQL">{{ result.buildSQL }}</pre>
+                        <a-empty v-else />
+                    </a-collapse-item>
+                </a-collapse>
+            </div>
+            <div class="content" style="padding-top: 0px;">
+                <a-collapse style="height: 100%;" :default-active-key="['1']">
+                    <a-collapse-item header="插入语句" key="1" style="max-height: 500px;" class="insertSQLBox">
+                        <template #extra>
+                            <span style="font-size: 12px;" @click.stop="copySQL('insertSQL')"><icon-copy /> 复制</span>
+                        </template>
+                        <pre v-if="result" ref="insertSQL">{{ result.insertSQL }}</pre>
                         <a-empty v-else />
                     </a-collapse-item>
                 </a-collapse>
@@ -232,6 +252,7 @@ interface Form {
     databaseName: string;
     tableName: string;
     tableComments: string;
+    num: number;
     tableFields: {
         name: string;
         type: string;
@@ -249,6 +270,7 @@ const form = reactive<Form>({
     databaseName: '',
     tableName: 'test_table',
     tableComments: '',
+    num: 10,
     tableFields: [
         {
             name: 'test_field',
@@ -264,7 +286,7 @@ const form = reactive<Form>({
         },
     ]
 })
-const result = ref<{ value: string } | null>(null)
+const result = ref<{ buildSQL: string, insertSQL: string } | null>(null)
 const resultType = ref<'mysql' | 'sqlServer' | 'oracle'>('mysql')
 
 
@@ -320,12 +342,16 @@ const collapseChange = (key: number) => {
 const onSubmit = (data: {
     values: Record<string, any>;
     errors: Record<string, ValidatedError> | undefined;
-}): any => {
+}) => {
     if (data.errors) { tips('warning'); return }
     if (data.values.tableFields.length === 0) { tips('warning', '请至少添加一条字段'); return }
 
     tips('success');
-    result.value = { value: generateMySQLCreateTableStatement(data.values as Form) };
+    result.value = {
+        buildSQL: generateMySQLCreateTableStatement(data.values as Form),
+        insertSQL: generateMySQLInsertStatement(data.values as Form)
+    };
+
 }
 
 //添加字段
@@ -400,6 +426,7 @@ const intelligentInputOk = (data: {
 
 //--------------------------------------------生成数据--------------------------------------------
 //生成myysql语句
+//生成建表语句
 const generateMySQLCreateTableStatement = (form: Form) => {
     const fieldDefinitions = form.tableFields.map(field => {
         let definition = `${field.name} ${field.type}`;
@@ -439,37 +466,65 @@ const generateMySQLCreateTableStatement = (form: Form) => {
   ${columnsClause}
 ) ${tableCommentsClause};`.trim();
 };
-//复制SQL语句
-const sqlPre = ref<HTMLPreElement | null>(null);
-onMounted(() => {
-    if (sqlPre.value) {
-        sqlPre.value.addEventListener('click', () => {
-            copySQL();
+
+// 生成插入语句
+const generateMySQLInsertStatement = (form: Form) => {
+    const tableName = form.tableName;
+    const num = form.num;
+
+    const insertStatements = Array.from({ length: num }, (_, index) => {
+        const fieldDefinitions = form.tableFields.map((field) => {
+            let definition = ``;
+            const fieldName = field.name;
+            let fakerGeneratorData = '';
+
+            switch (field.fakeDataType) {
+                case '不模拟':
+                    break;
+                case '固定值':
+                    // 根据 field.fakeData 生成
+                    fakerGeneratorData = field.fakeData;
+                    break;
+                case '随机值':
+                    // 根据 field.fakeData 中选择的随机值类型，用 faker.js 生成
+                    fakerGeneratorData = getFakerGeneratorForFieldType(field.fakeData);
+                    break;
+                case '正则表达式':
+                    // 根据 field.fakeData 中的正则表达式，生成对应的值
+                    const regex = new RegExp(field.fakeData);
+                    fakerGeneratorData = generateValueFromRegex(regex);
+                    break;
+            }
+
+            if (fakerGeneratorData !== '') {
+                definition = `INSERT INTO \`${tableName}\` (\`${fieldName}\`) VALUES (\`${fakerGeneratorData}\`);\n`;
+            }
+            return definition;
         });
-    }
-});
-async function copySQL() {
-    // if (sqlPre.value) {
-    //     try {
-    //         await navigator.clipboard.writeText(sqlPre.value.innerText);
-    //         tips('success', 'SQL 语句已复制到剪贴板')
-    //     } catch (err) {
-    //         console.error(err);
-    //         tips('warning', '复制操作失败')
-    //     }
-    // } else {
-    //     tips('warning', '请先生成语句')
-    // }
-    if (sqlPre.value) {
+
+        return fieldDefinitions.join('');
+    });
+
+    return insertStatements.join(''); // 使用空字符串连接，保留内部的换行符
+};
+
+
+
+//复制SQL语句
+const insertSQL = ref<HTMLPreElement | null>(null);
+const buildSQL = ref<HTMLPreElement | null>(null);
+async function copySQL(copyDomRef: string) {
+    const copyDom = copyDomRef === 'insertSQL' ? insertSQL.value : buildSQL.value;
+    if (copyDom) {
         // navigator clipboard 需要https等安全上下文
         if (navigator.clipboard && window.isSecureContext) {
             // navigator clipboard 向剪贴板写文本
             tips('success', 'SQL 语句已复制到剪贴板')
-            return navigator.clipboard.writeText(sqlPre.value.innerText);
+            return navigator.clipboard.writeText(copyDom.innerText);
         } else {
             // 创建text area
             let textArea = document.createElement("textarea");
-            textArea.value = sqlPre.value.innerText;
+            textArea.value = copyDom.innerText;
             // 使text area不在viewport，同时设置不可见
             textArea.style.position = "absolute";
             textArea.style.opacity = '0';
@@ -498,7 +553,50 @@ const fakeDataOptions: { '不模拟': false, '固定值': string, '随机值': A
     '随机值': ['人名', '手机号', '地址', '邮箱', '日期', '随机字符串', '随机数字', '随机布尔值'],
     '正则表达式': '请输入正则表达式'
 }
-console.log(fakerZH_CN.person.fullName());
+// 辅助函数：根据字段类型获取对应的 Faker.js 生成器
+const getFakerGeneratorForFieldType = (type: string) => {
+    //'人名', '手机号', '地址', '邮箱', '日期', '随机字符串', '随机数字', '随机布尔值'
+    let result: string = '';
+    switch (type) {
+        case '人名':
+            result = fakerZH_CN.person.fullName();
+            break;
+        case '手机号':
+            result = fakerZH_CN.phone.number();
+            break;
+        case '地址':
+            result = fakerZH_CN.location.streetAddress();
+            break;
+        case '邮箱':
+            result = fakerZH_CN.internet.email();
+            break;
+        case '日期':
+            result = fakerZH_CN.date.past().toString();
+            break;
+        case '随机字符串':
+            result = fakerZH_CN.lorem.word({ length: { min: 5, max: 10 } });
+            break;
+        case '随机数字':
+            result = fakerZH_CN.number.int().toString();
+            break;
+        case '随机布尔值':
+            result = fakerZH_CN.datatype.boolean().toString();
+            break;
+    }
+    return result;
+};
+
+
+// 辅助函数：根据正则表达式生成一个匹配该正则的值
+import RandExp from "randexp";
+const generateValueFromRegex = (regex: RegExp) => {
+    // 实现逻辑，生成符合正则的字符串
+    // const randexp = new RandExp([a-z]{6});
+    const randexp = new RandExp(regex);
+    // 这里仅作为示例，实际实现可能较为复杂
+    return randexp.gen(); // 替换为实际生成的值
+};
+
 
 
 
@@ -510,9 +608,9 @@ console.log(fakerZH_CN.person.fullName());
     flex: 1;
     display: flex;
     margin-top: 40px;
-    justify-content: space-evenly;
     gap: 20px;
     align-items: flex-start;
+    justify-content: flex-start;
 
     .card {
         width: 100%;
@@ -538,6 +636,10 @@ console.log(fakerZH_CN.person.fullName());
                     display: flex;
                     flex-direction: column;
 
+                    .arco-collapse {
+                        overflow: visible;
+                    }
+
                     .fieldTitle {
                         display: flex;
                         margin-bottom: 0px;
@@ -561,6 +663,8 @@ console.log(fakerZH_CN.person.fullName());
                         .inputBox {
                             background-color: #fff;
                         }
+
+
                     }
                 }
             }
