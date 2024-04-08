@@ -11,9 +11,17 @@
                 </div>
             </a-menu-item>
             <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">{{
-            route.meta.title
-        }}</a-menu-item>
+                route.meta.title
+                }}</a-menu-item>
         </a-menu>
+        <a-tooltip content="可以提交任何问题，包括不限于bug，功能建议，ui不合理，欢迎联系我。" placement="bottom" background-color="#3491FA">
+            <a-button :type="'text'" style="margin-right: 20px;">
+                <a-link href="https://github.com/zinwaa/zinwaa.github.io/issues">
+                    有个 Bug？
+                </a-link>
+            </a-button>
+        </a-tooltip>
+
     </div>
     <div class="PageBody">
         <router-view />

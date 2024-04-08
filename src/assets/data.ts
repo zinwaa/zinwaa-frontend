@@ -113,7 +113,7 @@ export const websiteData: IWebsiteData[] = [
     }, {
         time: '2024/4/7',
         title: 'v0.0.3',
-        content: '增加sql语句生成的生成插入语句功能',
+        content: '增加sql语句生成的生成插入语句功能与修复了多个bug',
         status: 'success'
     }
 ]
