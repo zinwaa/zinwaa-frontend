@@ -41,7 +41,7 @@
                             <a-input-number :style="{ width: '100px' }" placeholder="生成条数" :min="1" :max="100"
                                 v-model="form.num" />
                         </a-form-item>
-                        <div v-for="item, i in  form.tableFields " :key="symbol(i)" class="fieldCard"
+                        <div v-for="item, i in form.tableFields " :key="symbol(i)" class="fieldCard"
                             style="margin-bottom: 10px;">
                             <a-collapse :default-active-key="collapseActive" @change="collapseChange(i)"
                                 destroy-on-hide>
@@ -72,29 +72,47 @@
                                             <a-select :style="{ width: '320px' }" placeholder="请输入字段类型"
                                                 style="background-color: #fff;" allow-search v-model="item.type"
                                                 class="inputBox" popup-container="#type">
+                                                <a-option>INT</a-option>
+                                                <a-option>VARCHAR</a-option>
+                                                <a-option>TEXT</a-option>
+                                                <a-option>DATE</a-option>
                                                 <a-option>TINYINT</a-option>
                                                 <a-option>SMALLINT</a-option>
                                                 <a-option>MEDIUMINT</a-option>
-                                                <a-option>INT</a-option>
                                                 <a-option>BIGINT</a-option>
+                                                <a-option>DECIMAL</a-option>
                                                 <a-option>FLOAT</a-option>
                                                 <a-option>DOUBLE</a-option>
-                                                <a-option>DECIMAL</a-option>
-                                                <a-option>DATE</a-option>
-                                                <a-option>TIME</a-option>
+                                                <a-option>REAL</a-option>
+                                                <a-option>BIT</a-option>
+                                                <a-option>BOOLEAN</a-option>
+                                                <a-option>SERIAL</a-option>
                                                 <a-option>DATETIME</a-option>
                                                 <a-option>TIMESTAMP</a-option>
+                                                <a-option>TIME</a-option>
                                                 <a-option>YEAR</a-option>
+                                                <a-option>CHAR</a-option>
                                                 <a-option>TINYTEXT</a-option>
                                                 <a-option>TEXT</a-option>
                                                 <a-option>MEDIUMTEXT</a-option>
                                                 <a-option>LONGTEXT</a-option>
+                                                <a-option>BINARY</a-option>
+                                                <a-option>VARBINARY</a-option>
                                                 <a-option>TINYBLOB</a-option>
-                                                <a-option>BLOB</a-option>
                                                 <a-option>MEDIUMBLOB</a-option>
+                                                <a-option>BLOB</a-option>
                                                 <a-option>LONGBLOB</a-option>
                                                 <a-option>ENUM</a-option>
                                                 <a-option>SET</a-option>
+                                                <a-option>GEOMETRY</a-option>
+                                                <a-option>POINT</a-option>
+                                                <a-option>LINESTRING</a-option>
+                                                <a-option>POLYGON</a-option>
+                                                <a-option>MULTIPOINT</a-option>
+                                                <a-option>MULTILINESTRING</a-option>
+                                                <a-option>MULTIPOLYGON</a-option>
+                                                <a-option>GEOMETRYCOLLECTION</a-option>
+
                                             </a-select>
                                         </a-form-item>
                                         <a-form-item :field="`tableFields[${i}].defaultValue`" label-col-flex="50px"
