@@ -4,7 +4,7 @@
 
 存储着一部分我写的代码
 
-预览地址：[zinwaa 的个人主页](https://www.zinwaa.space) （备案中）
+预览地址：[zinwaa 的个人主页](https://www.zinwaa.space)
 
 
 ~~每一星期提交一个版本（尽量）~~

@@ -81,6 +81,7 @@
                             <span class="title">I'M ZinWaa</span>
                         </div>
                     </div>
+                    <span class="welcome" style="font-size: 14px;">A WEB DEVELOPER</span>
                 </div>
                 <ghost :size="50" style="margin-right: 30px;" />
             </div>
