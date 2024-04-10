@@ -447,7 +447,7 @@ const intelligentInputOk = (data: {
 //生成建表语句
 const generateMySQLCreateTableStatement = (form: Form) => {
     const fieldDefinitions = form.tableFields.map(field => {
-        let definition = `${field.name} ${field.type}`;
+        let definition = `\`${field.name}\` ${field.type}`;
 
         if (field.isPrimary) {
             definition += ' PRIMARY KEY';
@@ -672,6 +672,7 @@ const generateValueFromRegex = (regex: RegExp) => {
                         justify-content: flex-start;
                         align-content: flex-start;
                         column-gap: 30px;
+                        user-select: contain;
 
                         .fieldListBox {
                             width: 250px;
