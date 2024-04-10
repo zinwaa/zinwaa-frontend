@@ -102,7 +102,7 @@ watch(
 
 .menu {
     width: 100%;
-    height: 600px;
+    height: 80vh;
     padding: 40px;
     box-sizing: border-box;
     flex: 0;
