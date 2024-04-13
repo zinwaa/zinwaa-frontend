@@ -14,13 +14,18 @@
                 route.meta.title
                 }}</a-menu-item>
         </a-menu>
-        <a-tooltip content="可以提交任何问题，包括不限于bug，功能建议，ui不合理，欢迎联系我。" placement="bottom" background-color="#3491FA">
-            <a-button :type="'text'" style="margin-right: 20px;">
-                <a-link href="https://github.com/zinwaa/zinwaa.github.io/issues">
-                    有个 Bug？
-                </a-link>
+        <a-space style="margin-right: 20px;">
+            <a-tooltip content="可以提交任何问题，包括不限于bug，功能建议，ui不合理，欢迎联系我。" placement="bottom" background-color="#3491FA">
+                <a-button :type="'text'">
+                    <a-link href="https://github.com/zinwaa/zinwaa.github.io/issues">
+                        有个 Bug？
+                    </a-link>
+                </a-button>
+            </a-tooltip>
+            <a-button :type="'outline'" @click="() => { $router.push('/login') }">
+                登录/注册
             </a-button>
-        </a-tooltip>
+        </a-space>
 
     </div>
     <div class="PageBody">

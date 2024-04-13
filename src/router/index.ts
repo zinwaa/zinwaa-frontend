@@ -18,7 +18,6 @@ let pages = [
         meta: {
           title: '主页',
           headMenu: true,
-
         }
       }, {
         path: '/projects',
@@ -101,6 +100,16 @@ let pages = [
         ]
       }
     ]
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login.vue'),
+    meta: {
+      title: '登录',
+      headMenu: true,
+      asideMenu: false
+    }
   }
 ]
 const router = createRouter({
