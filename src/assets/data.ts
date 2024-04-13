@@ -115,5 +115,20 @@ export const websiteData: IWebsiteData[] = [
         title: 'v0.0.3',
         content: '增加sql语句生成的生成插入语句功能与修复了多个bug',
         status: 'success'
+    }, {
+        time: '2024/4/13',
+        title: 'backend',
+        content: '建立后端，跑通mysql数据库',
+        status: 'success'
+    }, {
+        time: '2024/4/14',
+        title: '注册/登录',
+        content: '增加注册/登录页面，实现注册/登录功能',
+        status: 'doing'
+    }, {
+        time: 'undefined',
+        title: '公安备案',
+        content: '公安备案成功',
+        status: 'todo'
     }
 ]

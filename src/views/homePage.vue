@@ -181,7 +181,7 @@
 import background from '@/components/background.vue'
 import card from '@/components/card.vue'
 import newhr from '@/components/newhr.vue'
-import { reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import ghost from '@/components/ghost.vue'
 import block from '@/components/block.vue'
 import { useRoute, useRouter } from 'vue-router'

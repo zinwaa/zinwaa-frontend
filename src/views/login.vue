@@ -2,11 +2,12 @@
     <div class="containers">
         <div class="shell">
             <div class="container a-container" id="a-container">
-                <form action="" method="" class="form" id="a-form">
+                <form action="" method="" class="form" id="a-form" @submit.prevent="register">
                     <h2 class="form_title title">创建账号</h2>
                     <input type="text" class="form_input" placeholder="Name">
-                    <input type="text" class="form_input" placeholder="Password">
-                    <button class="form_button button submit">注册</button>
+                    <input type="password" class="form_input" placeholder="Password">
+                    <input type="password" class="form_input" placeholder="Confirm Password">
+                    <button class="form_button button submit" type="submit">注册</button>
                 </form>
                 <a-link :hoverable="false" @click="() => { $router.push('/') }">
                     <span style="color: #a0a5a8;">返回主页</span>
@@ -14,11 +15,11 @@
             </div>
 
             <div class="container b-container" id="b-container">
-                <form action="" method="" class="form" id="b-form">
+                <form action="" method="" class="form" id="b-form" @submit.prevent="login">
                     <h2 class="form_title title">登入账号</h2>
                     <input type="text" class="form_input" placeholder="Name">
-                    <input type="text" class="form_input" placeholder="Password">
-                    <button class="form_button button submit">登录</button>
+                    <input type="password" class="form_input" placeholder="Password">
+                    <button class="form_button button submit" type="submit">登录</button>
                 </form>
                 <a-link :hoverable="false" @click="() => { $router.push('/') }">
                     <span style="color: #a0a5a8;">返回主页</span>
@@ -47,6 +48,7 @@
 
 
 <script setup lang='ts'>
+import { Message } from '@arco-design/web-vue';
 import { onMounted } from 'vue';
 
 onMounted(() => {
@@ -57,8 +59,7 @@ onMounted(() => {
     let switchBtn = document.querySelectorAll(".switch-btn") as NodeListOf<HTMLElement>;
     let aContainer = document.querySelector("#a-container") as HTMLElement;
     let bContainer = document.querySelector("#b-container") as HTMLElement;
-    let allButtons = document.querySelectorAll(".submit") as NodeListOf<HTMLElement>;
-    let getButtons = (e: any) => e.preventDefault()
+
     let changeForm = () => {
         // 修改类名
         switchCtn?.classList.add("is-gx");
@@ -74,27 +75,64 @@ onMounted(() => {
         aContainer?.classList.toggle("is-txl");
         bContainer?.classList.toggle("is-txl");
         bContainer?.classList.toggle("is-z");
-        console.log(123);
-
     }
     // 点击切换
     let shell = () => {
-        for (var i = 0; i < allButtons.length; i++) {
-            allButtons[i].addEventListener("click", getButtons);
-            console.log(allButtons[i]);
-        }
-
-        for (var i = 0; i < switchBtn.length; i++) {
+        for (var i = 0; i < switchBtn.length; i++)
             switchBtn[i].addEventListener("click", changeForm)
-        }
     }
     shell()
 })
+const register = (e: Event) => {
+    if (e.target) {
+        const username = ((e.target as HTMLFormElement)[0] as HTMLInputElement).value;
+        const password = ((e.target as HTMLFormElement)[1] as HTMLInputElement).value;
+        const confirmPassword = ((e.target as HTMLFormElement)[2] as HTMLInputElement).value;
+        if (username && password && confirmPassword) {
+            if (password !== confirmPassword) {
+                tips('warning', '两次密码输入不一致');
+            }
+        } else {
+            tips('warning', '请输入必填字段');
+        }
+        console.log(username, password);
+    }
+}
+const login = (e: Event) => {
+    if (e.target) {
+        const username = ((e.target as HTMLFormElement)[0] as HTMLInputElement).value;
+        const password = ((e.target as HTMLFormElement)[1] as HTMLInputElement).value;
+        if (username && password) {
+            // 登录
+        } else {
+            tips('warning', '请输入必填字段');
+        }
+        console.log(username, password);
+    }
+}
 
+
+//tips
+const tips = (status: 'success' | 'warning', message = '') => {
+    switch (status) {
+        case 'success':
+            Message.success({
+                content: message || '成功生成',
+                position: "top",
+            })
+            break;
+        case 'warning':
+            Message.warning({
+                content: message || '请输入必填字段',
+                position: "top",
+            })
+            break;
+    }
+}
 </script>
 
 
-<style>
+<style scoped>
 .containers {
     width: 100vw;
     height: 100vh;
