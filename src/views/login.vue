@@ -50,7 +50,8 @@
 <script setup lang='ts'>
 import { Message } from '@arco-design/web-vue';
 import { onMounted } from 'vue';
-
+import axios from 'axios';
+const BACKEND_URL = 'http://localhost:3000';
 onMounted(() => {
     let switchCtn = document.querySelector("#switch-cnt") as HTMLElement;
     let switchC1 = document.querySelector("#switch-c1") as HTMLElement;
@@ -83,31 +84,67 @@ onMounted(() => {
     }
     shell()
 })
+
+interface reaponse {
+    message: string,
+    status: boolean
+}
+
+//登录api
+const loginApi = async (username: string, password: string) => {
+    try {
+        const loginData = { username, password };
+        const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/api/login`, loginData)).data;
+        // 登录成功
+        if (reaponse.status) {
+            tips('success', reaponse.message);
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        } else {
+            tips('warning', reaponse.message);
+        }
+    } catch (error) {
+        console.log(error);
+        tips('warning', '服务器打盹了，请稍后重试或联系管理员');
+    }
+}
+// 注册api
+const registerApi = async (username: string, password: string) => {
+    try {
+        const registerData = { username, password };
+        const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/api/register`, registerData)).data;
+
+        tips('success', reaponse.message);
+
+    } catch (error) {
+        console.log(error);
+        tips('warning', '服务器打盹了，请稍后重试或联系管理员');
+    }
+}
+// 注册
 const register = (e: Event) => {
     if (e.target) {
         const username = ((e.target as HTMLFormElement)[0] as HTMLInputElement).value;
         const password = ((e.target as HTMLFormElement)[1] as HTMLInputElement).value;
         const confirmPassword = ((e.target as HTMLFormElement)[2] as HTMLInputElement).value;
         if (username && password && confirmPassword) {
-            if (password !== confirmPassword) {
-                tips('warning', '两次密码输入不一致');
-            }
-        } else {
-            tips('warning', '请输入必填字段');
-        }
-        console.log(username, password);
+            if (password !== confirmPassword) tips('warning', '两次密码输入不一致');
+            else registerApi(username, password);
+        } else tips('warning', '请输入必填字段');
     }
 }
+// 登录
 const login = (e: Event) => {
     if (e.target) {
         const username = ((e.target as HTMLFormElement)[0] as HTMLInputElement).value;
         const password = ((e.target as HTMLFormElement)[1] as HTMLInputElement).value;
         if (username && password) {
             // 登录
+            loginApi(username, password);
         } else {
             tips('warning', '请输入必填字段');
         }
-        console.log(username, password);
     }
 }
 
