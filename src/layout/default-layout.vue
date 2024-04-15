@@ -22,9 +22,10 @@
                     </a-link>
                 </a-button>
             </a-tooltip>
-            <a-button :type="'outline'" @click="() => { $router.push('/login') }">
+            <a-button :type="'outline'" @click="() => { $router.push('/login') }" v-if="!username">
                 登录/注册
             </a-button>
+            <a-tag v-else size="large" color="blue">{{ username }}</a-tag>
         </a-space>
 
     </div>
@@ -48,9 +49,14 @@ export default defineComponent({
     name: 'App',
     components: {},
     data() {
+        const username = ref<string | null>(null)
+        onMounted(() => {
+            username.value = localStorage.getItem('username')
+        })
         return {
             defaultSelectedKeys: [] as RouteRecordName[],
-            routes: [] as MenuItem[]
+            routes: [] as MenuItem[],
+            username: username
         }
     },
     created() {

@@ -88,6 +88,7 @@ onMounted(() => {
 interface reaponse {
     message: string,
     status: boolean
+    username: string | null
 }
 
 //登录api
@@ -96,8 +97,9 @@ const loginApi = async (username: string, password: string) => {
         const loginData = { username, password };
         const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/api/login`, loginData)).data;
         // 登录成功
-        if (reaponse.status) {
+        if (reaponse.status && reaponse.username) {
             tips('success', reaponse.message);
+            localStorage.setItem('username', reaponse.username);
             setTimeout(() => {
                 window.location.href = '/';
             }, 1000);
