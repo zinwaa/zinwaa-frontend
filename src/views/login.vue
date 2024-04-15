@@ -51,7 +51,7 @@
 import { Message } from '@arco-design/web-vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'http://zinwaa.space:3000';
 onMounted(() => {
     let switchCtn = document.querySelector("#switch-cnt") as HTMLElement;
     let switchC1 = document.querySelector("#switch-c1") as HTMLElement;
