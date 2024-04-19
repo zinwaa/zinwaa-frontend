@@ -12,7 +12,7 @@
             </a-menu-item>
             <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">{{
                 route.meta.title
-                }}</a-menu-item>
+            }}</a-menu-item>
         </a-menu>
         <a-space style="margin-right: 20px;">
             <a-tooltip content="可以提交任何问题，包括不限于bug，功能建议，ui不合理，欢迎联系我。" placement="bottom" background-color="#3491FA">
@@ -22,10 +22,13 @@
                     </a-link>
                 </a-button>
             </a-tooltip>
-            <a-button :type="'outline'" @click="() => { $router.push('/login') }" v-if="!username">
+            <!-- <a-button :type="'outline'" @click="() => { $router.push('/login') }" v-if="!username">
+                登录/注册
+            </a-button> -->
+            <a-button :type="'outline'" @click="() => { $router.push('/login') }">
                 登录/注册
             </a-button>
-            <a-tag v-else size="large" color="blue">{{ username }}</a-tag>
+            <!-- <a-tag v-else size="large" color="blue">{{ username }}</a-tag> -->
         </a-space>
 
     </div>
