@@ -51,7 +51,7 @@
 import { Message } from '@arco-design/web-vue';
 import { onMounted } from 'vue';
 import axios from 'axios';
-const BACKEND_URL = 'http://175.178.210.240:3000';
+const BACKEND_URL = 'https://zinwaa.space/api';
 onMounted(() => {
     let switchCtn = document.querySelector("#switch-cnt") as HTMLElement;
     let switchC1 = document.querySelector("#switch-c1") as HTMLElement;
@@ -95,7 +95,7 @@ interface reaponse {
 const loginApi = async (username: string, password: string) => {
     try {
         const loginData = { username, password };
-        const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/api/login`, loginData)).data;
+        const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/login`, loginData)).data;
         // 登录成功
         if (reaponse.status && reaponse.username) {
             tips('success', reaponse.message);
@@ -115,7 +115,7 @@ const loginApi = async (username: string, password: string) => {
 const registerApi = async (username: string, password: string) => {
     try {
         const registerData = { username, password };
-        const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/api/register`, registerData)).data;
+        const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/register`, registerData)).data;
 
         tips('success', reaponse.message);
 
