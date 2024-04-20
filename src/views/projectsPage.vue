@@ -2,7 +2,7 @@
     <div class="page">
         <a-affix :offset-top="60">
             <div class="menu">
-                <a-menu showCollapseButton :selected-keys="[projectsMenuKey]">
+                <a-menu showCollapseButton :selected-keys="[projectsMenuKey]" :auto-open-selected="true">
                     <div v-for="route in routes">
                         <a-menu-item :key="route.name" @click="$router.push(route.path)"
                             v-if="route.children?.length === 0">
@@ -19,9 +19,9 @@
                                 <icon-apps v-else />
                             </template>
                             <template #title>{{ route.name }}</template>
-                            <a-menu-item v-for="child in route.children" :key="child.name"
+                            <a-menu-item v-for="child in route.children" :key="`${route.name}/${child.name}`"
                                 @click="$router.push(child.path)">
-                                {{ child.name }}
+                                {{ child.meta.title }}
                             </a-menu-item>
                         </a-sub-menu>
                     </div>
@@ -29,7 +29,7 @@
             </div>
         </a-affix>
 
-        <router-view />
+        <router-view :key="$route.fullPath" />
     </div>
     <beian />
 </template>
@@ -87,20 +87,23 @@ const router = useRouter();
 // 生命周期钩子
 onMounted(() => {
     routes.value = getMenuRoutes(Array.from(router.options.routes));
-    router.push(`/projects/${projectsMenuKey.value}`);
+    if ($route.path === '/projects') {
+        projectsMenuKey.value = 'sqlCreate/home';
+        router.push(`/projects/${projectsMenuKey.value}`);
+    }
 });
 
 // 监听路由变化
 watch(
     $route,
     (newRoute) => {
-        if (newRoute.path === '/projects') {
-            projectsMenuKey.value = 'sqlCreate';
-            router.push(`/projects/${projectsMenuKey.value}`);
-        } else {
-            projectsMenuKey.value = newRoute.path.split('/')[2];
-            router.push(`/projects/${projectsMenuKey.value}`);
+        const pathArr = newRoute.path.split('/');
+        if (pathArr[3] && pathArr[3] !== 'home') {
+            projectsMenuKey.value = `${pathArr[2]}/${pathArr[3]}`;
+        } else if (pathArr[3] === 'home') {
+            projectsMenuKey.value = 'sqlCreate/home';
         }
+        router.push(`/projects/${projectsMenuKey.value}`);
     },
     { immediate: true }
 );
