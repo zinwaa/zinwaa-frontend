@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import NProgress from 'nprogress'
+import NProgress, { render } from 'nprogress'
 let pages = [
   {
     path: '/',
@@ -31,7 +31,7 @@ let pages = [
           {
             path: '/projects/sqlCreate',
             name: 'sqlCreate',
-            component: () => import('@/views/projects/sql/sqlCreate.vue'),
+            redirect: '/projects/sqlCreate/home',
             meta: {
               title: 'SQL语句生成器',
               headMenu: false,

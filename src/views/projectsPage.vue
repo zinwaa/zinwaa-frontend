@@ -5,7 +5,7 @@
                 <a-menu showCollapseButton :selected-keys="[projectsMenuKey]" :auto-open-selected="true">
                     <div v-for="route in routes">
                         <a-menu-item :key="route.name" @click="$router.push(route.path)"
-                            v-if="route.children?.length === 0">
+                            v-if="route.children?.length === 0" :auto-open-selected="true">
                             <template #icon>
                                 <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
                                 <icon-apps v-else />
@@ -13,7 +13,7 @@
                             {{ route.name }}
                         </a-menu-item>
 
-                        <a-sub-menu :key="route.name" v-if="route.children?.length !== 0">
+                        <a-sub-menu :key="route.name" v-if="route.children?.length !== 0" :auto-open-selected="true">
                             <template #icon>
                                 <component :is="route.meta.icon" :size="18" v-if="route.meta.icon" />
                                 <icon-apps v-else />
@@ -29,7 +29,7 @@
             </div>
         </a-affix>
 
-        <router-view :key="$route.fullPath" />
+        <router-view :key="$route.path" />
     </div>
     <beian />
 </template>
