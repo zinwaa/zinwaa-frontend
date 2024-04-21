@@ -636,7 +636,7 @@ const generateValueFromRegex = (regex: RegExp) => {
         background-color: #fff;
         border-radius: 4px;
         min-width: 580px;
-        box-shadow: #ccc 0 0 8px 4px;
+        box-shadow: #cccccc34 0 0 8px 4px;
 
         .title {
             padding: 20px 30px;
