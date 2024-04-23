@@ -200,6 +200,9 @@
                         </a-button>
                         <a-space style="margin-top: 10px;display: flex;gap: 10px;">
                             <a-button type="primary" style="width: 180px;" html-type="submit">一键生成</a-button>
+                            <a-button type="outline" @click="saveTableWindow">
+                                保存表
+                            </a-button>
                             <a-button type="outline" html-type="reset">重置</a-button>
                         </a-space>
                     </a-form>
@@ -256,6 +259,30 @@
             </div>
         </a-modal>
     </div>
+    <div>
+        <a-modal v-model:visible="saveTablevisible" :title-align="'start'" class="windows" :footer="false">
+            <template #title style="margin: 0;">
+                <span class="title" style="margin: 20px 0;display: block;">保存表信息（后续可直接导入）</span>
+            </template>
+            <div class="content">
+                <span style="margin-bottom: 5px;display: block;color: var(--color-text-2);">注意，你提交的内容可能会被公开！</span>
+                <a-form :model="TableData" @submit="saveTable" :wrapper-col-props="{ span: 24, offset: -2 }">
+                    <a-form-item :rules="[{ required: true, message: '不能为空' }]" field="tableTitle"
+                        :label-col-style="{ transform: 'translateX(-40%)' }" :label="'名称'">
+                        <a-input v-model="TableData.tableTitle" placeholder="请输入名称" allow-clear />
+                    </a-form-item>
+                    <a-form-item field="intelligentInput">
+                        <a-textarea placeholder="输入多个字段名称，请用【中文或英文逗号】分开" :allow-clear="false"
+                            :auto-size="{ minRows: 5, maxRows: 5 }" v-model="TableData.saveTableData" />
+                    </a-form-item>
+                    <div class="inputBox" style="display: flex;gap: 10px;margin-top: 20px;">
+                        <a-button type="primary" html-type="submit">保存表</a-button>
+                        <a-button type="outline" @click="saveTableWindow">重置</a-button>
+                    </div>
+                </a-form>
+            </div>
+        </a-modal>
+    </div>
 
 </template>
 
@@ -264,6 +291,11 @@
 import { onMounted, reactive, ref } from 'vue';
 import type { ValidatedError } from '@arco-design/web-vue';
 import { Message } from '@arco-design/web-vue';
+
+//--------------------------------------------后端数据--------------------------------------------
+import axios from 'axios';
+const BACKEND_URL = 'https://zinwaa.space/api'
+
 
 //--------------------------------------------数据部分--------------------------------------------
 interface Form {
@@ -615,7 +647,31 @@ const generateValueFromRegex = (regex: RegExp) => {
     return randexp.gen(); // 替换为实际生成的值
 };
 
+//--------------------------------------------保存功能--------------------------------------------
+// 保存表
+const saveTablevisible = ref(false);
+const TableData = reactive({
+    tableTitle: '',
+    saveTableData: '',
+});
+const saveTableWindow = () => {
+    saveTablevisible.value = true;
+    TableData.tableTitle = JSON.stringify(form.tableComments).replace(/"/g, '');
+    TableData.saveTableData = JSON.stringify(form);
+};
 
+const saveTable = (data: {
+    values: Record<string, any>;
+    errors: Record<string, ValidatedError> | undefined;
+}): any => {
+    if (data.errors) {
+        tips('warning', '请输入表的名称');
+        return;
+    }
+
+    console.log(data);
+
+};
 
 
 </script>
