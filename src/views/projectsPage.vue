@@ -28,7 +28,6 @@
                 </a-menu>
             </div>
         </a-affix>
-
         <router-view :key="$route.path" />
     </div>
     <beian />

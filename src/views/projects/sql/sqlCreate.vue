@@ -57,6 +57,9 @@
                                         </a-form-item>
                                     </template>
                                     <template #extra>
+                                        <a-button type="text" status="normal" @click.stop="saveFieldWindow(i)">
+                                            保存
+                                        </a-button>
                                         <a-button type="text" status="danger" @click.stop="removeField(i)">
                                             删除
                                         </a-button>
@@ -283,6 +286,30 @@
             </div>
         </a-modal>
     </div>
+    <div>
+        <a-modal v-model:visible="saveFieldvisible" :title-align="'start'" class="windows" :footer="false">
+            <template #title style="margin: 0;">
+                <span class="title" style="margin: 20px 0;display: block;">保存字段信息（后续可直接导入）</span>
+            </template>
+            <div class="content">
+                <span style="margin-bottom: 5px;display: block;color: var(--color-text-2);">注意，你提交的内容可能会被公开！</span>
+                <a-form :model="FieldData" @submit="saveField" :wrapper-col-props="{ span: 24, offset: -2 }">
+                    <a-form-item :rules="[{ required: true, message: '不能为空' }]" field="FieldTitle"
+                        :label-col-style="{ transform: 'translateX(-40%)' }" :label="'名称'">
+                        <a-input v-model="FieldData.title" placeholder="请输入名称" allow-clear />
+                    </a-form-item>
+                    <a-form-item field="intelligentInput">
+                        <a-textarea placeholder="输入多个字段名称，请用【中文或英文逗号】分开" :allow-clear="false"
+                            :auto-size="{ minRows: 5, maxRows: 5 }" v-model="FieldData.data" />
+                    </a-form-item>
+                    <div class="inputBox" style="display: flex;gap: 10px;margin-top: 20px;">
+                        <a-button type="primary" html-type="submit">保存表</a-button>
+                        <a-button type="outline" @click="saveFieldWindow(saveFieldChoose)">重置</a-button>
+                    </div>
+                </a-form>
+            </div>
+        </a-modal>
+    </div>
 
 </template>
 
@@ -291,7 +318,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import type { ValidatedError } from '@arco-design/web-vue';
 import { tips } from '@/utils/tips';
-
+import { getFakerGeneratorForFieldType, generateValueFromRegex } from '@/utils/sqlcreate/sqlcreateFuntion'
 
 
 //--------------------------------------------数据部分--------------------------------------------
@@ -558,56 +585,16 @@ async function copySQL(copyDomRef: string) {
 }
 
 // 模拟数据部分
-import { fakerZH_CN } from '@faker-js/faker';
 const fakeDataOptions: { '不模拟': false, '固定值': string, '随机值': Array<string>, '正则表达式': string } = {
     '不模拟': false,
     '固定值': '请输入固定值',
     '随机值': ['人名', '手机号', '地址', '邮箱', '日期', '随机字符串', '随机数字', '随机布尔值'],
     '正则表达式': '请输入正则表达式'
 }
-// 辅助函数：根据字段类型获取对应的 Faker.js 生成器
-const getFakerGeneratorForFieldType = (type: string) => {
-    //'人名', '手机号', '地址', '邮箱', '日期', '随机字符串', '随机数字', '随机布尔值'
-    let result: string = '';
-    switch (type) {
-        case '人名':
-            result = fakerZH_CN.person.fullName();
-            break;
-        case '手机号':
-            result = fakerZH_CN.phone.number();
-            break;
-        case '地址':
-            result = fakerZH_CN.location.streetAddress();
-            break;
-        case '邮箱':
-            result = fakerZH_CN.internet.email();
-            break;
-        case '日期':
-            result = fakerZH_CN.date.past().toString();
-            break;
-        case '随机字符串':
-            result = fakerZH_CN.lorem.word({ length: { min: 5, max: 10 } });
-            break;
-        case '随机数字':
-            result = fakerZH_CN.number.int().toString();
-            break;
-        case '随机布尔值':
-            result = fakerZH_CN.datatype.boolean().toString();
-            break;
-    }
-    return result;
-};
 
 
-// 辅助函数：根据正则表达式生成一个匹配该正则的值
-import RandExp from "randexp";
-const generateValueFromRegex = (regex: RegExp) => {
-    // 实现逻辑，生成符合正则的字符串
-    // const randexp = new RandExp([a-z]{6});
-    const randexp = new RandExp(regex);
-    // 这里仅作为示例，实际实现可能较为复杂
-    return randexp.gen(); // 替换为实际生成的值
-};
+
+
 
 //--------------------------------------------table 相关功能--------------------------------------------
 import getCurrentDate from '@/utils/getCurrentDate';
@@ -621,12 +608,18 @@ const TableData = reactive({
     saveTableData: '',
 });
 const saveTableWindow = () => {
+    if (!sessionStorage.getItem('username')) {
+        tips('warning', '请先登录')
+        return;
+    }
     formRef.value?.validate((valid: {} | undefined) => {
         if (valid) {
             tips('warning', '请输入必填字段');
             return;
-        }
-        else {
+        } else if (form.tableFields.length === 0) {
+            tips('warning', '请至少添加一条字段');
+            return;
+        } else {
             saveTablevisible.value = true;
             TableData.tableTitle = JSON.stringify(form.tableComments).replace(/"/g, '');
             TableData.saveTableData = JSON.stringify(form);
@@ -655,6 +648,53 @@ const saveTable = (data: {
     }
 };
 
+
+// --------------------------------------------Field 相关功能--------------------------------------------
+import { saveFieldApi } from '@/api/field/saveField';
+const saveFieldvisible = ref(false);
+const FieldData = reactive({
+    title: '',
+    data: '',
+});
+// 保存字段
+const saveFieldChoose = ref<number>(0)
+const saveFieldWindow = (i: number) => {
+    saveFieldChoose.value = i;
+    const field = form.tableFields[i];
+    if (!sessionStorage.getItem('username')) {
+        tips('warning', '请先登录')
+        return;
+    } else if (field.name === '' || field.type === '') {
+        tips('warning', '请输入必填字段');
+        return;
+    } else {
+        saveFieldvisible.value = true;
+        FieldData.title = JSON.stringify(field.comment).replace(/"/g, '');
+        FieldData.data = JSON.stringify(field);
+    }
+};
+const saveField = (data: {
+    values: Record<string, any>;
+    errors: Record<string, ValidatedError> | undefined;
+}): any => {
+    if (data.errors) {
+        tips('warning', '请输入表的名称');
+        return;
+    } else if (!sessionStorage.getItem('username')) {
+        tips('warning', '请先登录')
+        return;
+    } else {
+        const sendfieldData = {
+            data: JSON.stringify(form.tableFields[saveFieldChoose.value]),
+            userid: sessionStorage.username,
+            time: getCurrentDate(),
+            title: FieldData.title,
+            tag: sessionStorage.username === 'zinwaa' ? 'offical' : 'user',
+        }
+        saveFieldApi(sendfieldData)
+        saveFieldvisible.value = false;
+    }
+};
 
 </script>
 

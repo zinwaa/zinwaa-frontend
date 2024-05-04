@@ -10,6 +10,15 @@ export interface GetTableReaponse extends reaponse {
         userid: string
     }[]
 }
+export interface GetFieldReaponse extends reaponse {
+    data: {
+        fieldData: string,
+        time: string,
+        title: string,
+        userid: string,
+        tag: string
+    }[]
+}
 
 export interface Field {
     name: string;
