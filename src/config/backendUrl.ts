@@ -1,0 +1,1 @@
+export default 'https://zinwaa.space/api'

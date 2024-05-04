@@ -97,13 +97,14 @@ const loginApi = async (username: string, password: string) => {
         const loginData = { username, password };
         const reaponse: reaponse = (await axios.post(`${BACKEND_URL}/login`, loginData)).data;
         // 登录成功
-        if (reaponse.status && reaponse.username) {
+        if (reaponse.status) {
             tips('success', reaponse.message);
-            // localStorage.setItem('username', reaponse.username);
+            reaponse.username && sessionStorage.setItem('username', reaponse.username);
             setTimeout(() => {
                 window.location.href = '/';
             }, 1000);
         } else {
+            console.log(reaponse.message);
             tips('warning', reaponse.message);
         }
     } catch (error) {

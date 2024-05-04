@@ -13,7 +13,8 @@
                     class="search" @search="allTableSearch" />
 
                 <!-- 所有公开表信息 -->
-                <a-list class="list-demo-action-layout" :bordered="false" :data="allTableData"
+                <a-list class="list-demo-action-layout" :bordered="false"
+                    :data="allTableData.filter(item => !allSearchValue || item.name.includes(allSearchValue))"
                     :pagination-props="allTableDataPaginationProps" style="margin: 20px 0;">
                     <template #item="{ item }">
                         <a-list-item class="list-demo-item" action-layout="vertical">
@@ -59,8 +60,9 @@
                 <a-input-search :style="{ width: '320px' }" placeholder="请输入表名" button-text="搜索" search-button
                     class="search" @search="ownselfTableSearch" />
 
-                <!-- 所有公开表信息 -->
-                <a-list class="list-demo-action-layout" :bordered="false" :data="ownselfTableData"
+                <!-- 所有个人表信息 -->
+                <a-list class="list-demo-action-layout" :bordered="false"
+                    :data="ownselfTableData.filter(item => !ownselfSearchValue || item.name.includes(ownselfSearchValue))"
                     :pagination-props="ownselfTableDataPaginationProps" style="margin: 20px 0;">
                     <template #item="{ item }">
                         <a-list-item class="list-demo-item" action-layout="vertical">
@@ -101,11 +103,7 @@
 
 
 <script setup lang='ts'>
-import { reactive } from 'vue';
-
-const allTableSearch = (value: string) => {
-    console.log(value);
-}
+import { onMounted, reactive, ref } from 'vue';
 
 interface TableData {
     title: string,
@@ -114,85 +112,47 @@ interface TableData {
     fieldList: string[],
     time: string
 }
-const allTableData: TableData[] = reactive([
-    {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    }, {
-        title: '这是表描述',
-        name: '表名',
-        comment: '表描述',
-        fieldList: ['id', 'name'],
-        time: '2022-01-01'
-    },
-])
-const ownselfTableSearch = (value: string) => {
-    console.log(value);
-}
+const allTableData: TableData[] = reactive([])
 const ownselfTableData: TableData[] = reactive([])
+
+// 获取表
+import { getTableApi } from '@/api/table/getTable';
+import type { Table } from '@/types/interface';
+onMounted(async () => {
+    const res = await getTableApi('');
+    const username = sessionStorage.getItem('username');
+    res?.forEach(item => {
+        const tableItem: { saveTableData: string } = JSON.parse(item.tableData);
+        const tableData: Table = JSON.parse(tableItem.saveTableData);
+        allTableData.push({
+            title: item.title,
+            name: tableData.tableName,
+            comment: tableData.tableComments,
+            fieldList: tableData.tableFields.map(item => item.name),
+            time: item.time.split('T')[0]
+        })
+
+        if (item.userid === username) {
+            ownselfTableData.push({
+                title: item.title,
+                name: tableData.tableName,
+                comment: tableData.tableComments,
+                fieldList: tableData.tableFields.map(item => item.name),
+                time: item.time.split('T')[0]
+            })
+        }
+    })
+})
+
+const allSearchValue = ref('');
+const ownselfSearchValue = ref('');
+const allTableSearch = (value: string) => {
+    allSearchValue.value = value;
+}
+const ownselfTableSearch = (value: string) => {
+    ownselfSearchValue.value = value;
+}
+
 const allTableDataPaginationProps = reactive({
     defaultPageSize: 5,
     total: allTableData.length

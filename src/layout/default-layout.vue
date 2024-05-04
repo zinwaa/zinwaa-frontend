@@ -12,7 +12,7 @@
             </a-menu-item>
             <a-menu-item v-for="route in routes" :key="route.name" @click="$router.push(route.path)">{{
                 route.meta.title
-                }}</a-menu-item>
+            }}</a-menu-item>
         </a-menu>
         <a-space style="margin-right: 20px;">
             <a-tooltip content="可以提交任何问题，包括不限于bug，功能建议，ui不合理，欢迎联系我。" placement="bottom" background-color="#3491FA">
@@ -51,7 +51,7 @@ export default defineComponent({
     data() {
         const username = ref<string | null>(null)
         onMounted(() => {
-            username.value = localStorage.getItem('username')
+            username.value = sessionStorage.getItem('username')
         })
         return {
             defaultSelectedKeys: [] as RouteRecordName[],

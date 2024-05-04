@@ -13,7 +13,7 @@
                 </div>
                 <div class="inputForm">
                     <a-form :model="form" :label-align="'left'" :label-col-props="{ span: 3, offset: 1 }"
-                        @submit="onSubmit">
+                        @submit="onSubmit" ref="formRef">
                         <a-form-item field="databaseName" validate-trigger="input">
                             <template #label>
                                 <span class="label">库名</span>
@@ -43,8 +43,7 @@
                         </a-form-item>
                         <div v-for="item, i in form.tableFields " :key="symbol(i)" class="fieldCard"
                             style="margin-bottom: 10px;">
-                            <a-collapse :default-active-key="collapseActive" @change="collapseChange(i)"
-                                destroy-on-hide>
+                            <a-collapse :default-active-key="collapseActive" @change="collapseChange(i)">
                                 <a-collapse-item :key="i">
                                     <template #header>
                                         <a-form-item :label-col-style="{ width: '60px' }" class="fieldTitle"
@@ -203,7 +202,8 @@
                             <a-button type="outline" @click="saveTableWindow">
                                 保存表
                             </a-button>
-                            <a-button type="outline" html-type="reset">重置</a-button>
+                            <a-button type="outline"
+                                @click="($refs.formRef as HTMLFormElement).resetFields()">重置</a-button>
                         </a-space>
                     </a-form>
                 </div>
@@ -219,7 +219,7 @@
                         <template #extra>
                             <span style="font-size: 12px;" @click.stop="copySQL('buildSQL')"><icon-copy /> 复制</span>
                         </template>
-                        <pre v-if="result" ref="buildSQL">{{ result.buildSQL }}</pre>
+                        <pre v-if="result?.buildSQL" ref="buildSQL">{{ result.buildSQL }}</pre>
                         <a-empty v-else />
                     </a-collapse-item>
                 </a-collapse>
@@ -230,7 +230,7 @@
                         <template #extra>
                             <span style="font-size: 12px;" @click.stop="copySQL('insertSQL')"><icon-copy /> 复制</span>
                         </template>
-                        <pre v-if="result" ref="insertSQL">{{ result.insertSQL }}</pre>
+                        <pre v-if="result?.insertSQL" ref="insertSQL">{{ result?.insertSQL }}</pre>
                         <a-empty v-else />
                     </a-collapse-item>
                 </a-collapse>
@@ -290,33 +290,13 @@
 <script setup lang='ts'>
 import { onMounted, reactive, ref } from 'vue';
 import type { ValidatedError } from '@arco-design/web-vue';
-import { Message } from '@arco-design/web-vue';
+import { tips } from '@/utils/tips';
 
-//--------------------------------------------后端数据--------------------------------------------
-import axios from 'axios';
-const BACKEND_URL = 'https://zinwaa.space/api'
 
 
 //--------------------------------------------数据部分--------------------------------------------
-interface Form {
-    databaseName: string;
-    tableName: string;
-    tableComments: string;
-    num: number;
-    tableFields: {
-        name: string;
-        type: string;
-        defaultValue: string;
-        comment: string;
-        onUpdate: string;
-        isPrimary: boolean;
-        notNull: boolean;
-        isAutoIncrement: boolean;
-        fakeDataType: '不模拟' | '固定值' | '随机值' | '正则表达式';
-        fakeData: string;
-    }[];
-}
-const form = reactive<Form>({
+import type { Table } from '@/types/interface'
+const form = reactive<Table>({
     databaseName: '',
     tableName: 'test_table',
     tableComments: '',
@@ -357,24 +337,6 @@ onMounted(() => {
     }
 })
 
-//tips
-const tips = (status: 'success' | 'warning', message = '') => {
-    switch (status) {
-        case 'success':
-            Message.success({
-                content: message || '成功生成',
-                position: "top",
-            })
-            break;
-        case 'warning':
-            Message.warning({
-                content: message || '请输入必填字段',
-                position: "top",
-            })
-            break;
-    }
-}
-
 
 
 //--------------------------------------------表单功能--------------------------------------------
@@ -394,14 +356,14 @@ const onSubmit = (data: {
     errors: Record<string, ValidatedError> | undefined;
 }) => {
     if (data.errors) { tips('warning'); return }
-    if (data.values.tableFields.length === 0) { tips('warning', '请至少添加一条字段'); return }
-
-    tips('success');
-    result.value = {
-        buildSQL: generateMySQLCreateTableStatement(data.values as Form),
-        insertSQL: generateMySQLInsertStatement(data.values as Form)
-    };
-
+    else if (data.values.tableFields.length === 0) { tips('warning', '请至少添加一条字段'); return }
+    else {
+        tips('success');
+        result.value = {
+            buildSQL: generateMySQLCreateTableStatement(data.values as Table),
+            insertSQL: generateMySQLInsertStatement(data.values as Table)
+        };
+    }
 }
 
 //添加字段
@@ -477,7 +439,7 @@ const intelligentInputOk = (data: {
 //--------------------------------------------生成数据--------------------------------------------
 //生成myysql语句
 //生成建表语句
-const generateMySQLCreateTableStatement = (form: Form) => {
+const generateMySQLCreateTableStatement = (form: Table) => {
     const fieldDefinitions = form.tableFields.map(field => {
         let definition = `\`${field.name}\` ${field.type}`;
 
@@ -493,7 +455,7 @@ const generateMySQLCreateTableStatement = (form: Form) => {
             definition += ' NOT NULL';
         }
 
-        if (field.defaultValue !== '') {
+        if (field.defaultValue !== 'NULL') {
             definition += ` DEFAULT ${field.defaultValue}`;
         }
 
@@ -518,7 +480,7 @@ const generateMySQLCreateTableStatement = (form: Form) => {
 };
 
 // 生成插入语句
-const generateMySQLInsertStatement = (form: Form) => {
+const generateMySQLInsertStatement = (form: Table) => {
     const tableName = form.tableName;
     const num = form.num;
 
@@ -647,19 +609,30 @@ const generateValueFromRegex = (regex: RegExp) => {
     return randexp.gen(); // 替换为实际生成的值
 };
 
-//--------------------------------------------保存功能--------------------------------------------
+//--------------------------------------------table 相关功能--------------------------------------------
+import getCurrentDate from '@/utils/getCurrentDate';
+
 // 保存表
+import { saveTableApi } from '@/api/table/saveTable';
 const saveTablevisible = ref(false);
+const formRef = ref<null | HTMLFormElement>(null);
 const TableData = reactive({
     tableTitle: '',
     saveTableData: '',
 });
 const saveTableWindow = () => {
-    saveTablevisible.value = true;
-    TableData.tableTitle = JSON.stringify(form.tableComments).replace(/"/g, '');
-    TableData.saveTableData = JSON.stringify(form);
+    formRef.value?.validate((valid: {} | undefined) => {
+        if (valid) {
+            tips('warning', '请输入必填字段');
+            return;
+        }
+        else {
+            saveTablevisible.value = true;
+            TableData.tableTitle = JSON.stringify(form.tableComments).replace(/"/g, '');
+            TableData.saveTableData = JSON.stringify(form);
+        }
+    });
 };
-
 const saveTable = (data: {
     values: Record<string, any>;
     errors: Record<string, ValidatedError> | undefined;
@@ -667,10 +640,19 @@ const saveTable = (data: {
     if (data.errors) {
         tips('warning', '请输入表的名称');
         return;
+    } else if (!sessionStorage.getItem('username')) {
+        tips('warning', '请先登录')
+        return;
+    } else {
+        const tableData = {
+            data: JSON.stringify(form),
+            userid: sessionStorage.username,
+            time: getCurrentDate(),
+            title: TableData.tableTitle,
+        }
+        saveTableApi(tableData)
+        saveTablevisible.value = false;
     }
-
-    console.log(data);
-
 };
 
 
