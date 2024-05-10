@@ -8,6 +8,7 @@
                 <div class="inputBtn">
                     <a-space>
                         <a-button type="outline" @click="intelligentInputClick">智能输入</a-button>
+                        <a-button type="outline" @click="importJSONClick">导入JSON</a-button>
                         <!-- <a-button type="outline">导入多条字段</a-button> -->
                     </a-space>
                 </div>
@@ -263,6 +264,27 @@
         </a-modal>
     </div>
     <div>
+        <a-modal v-model:visible="importJSONVisible" :title-align="'start'" class="windows" :footer="false">
+            <template #title style="margin: 0;">
+                <span class="title" style="margin: 20px 0;display: block;"> 导入JSON </span>
+            </template>
+            <div class="content">
+                <span style="margin-bottom: 5px;display: block;">输入JSON格式的表配置：</span>
+                <a-form :model="windowsData" @submit="importJSONOk" :wrapper-col-props="{ span: 24, offset: -2 }">
+                    <a-form-item hide-asterisk :rules="[{ required: true, message: '不能为空' }]" field="importJSON">
+                        <a-textarea placeholder="输入JSON格式的表配置" :allow-clear="false"
+                            :auto-size="{ minRows: 18, maxRows: 18 }" v-model="windowsData.importJSON" />
+                    </a-form-item>
+
+                    <div class="inputBox" style="display: flex;justify-content: flex-end;gap: 10px;margin-top: 20px;">
+                        <a-button type="outline" html-type="reset">重置</a-button>
+                        <a-button type="primary" html-type="submit" style="width: 100px;">导入</a-button>
+                    </div>
+                </a-form>
+            </div>
+        </a-modal>
+    </div>
+    <div>
         <a-modal v-model:visible="saveTablevisible" :title-align="'start'" class="windows" :footer="false">
             <template #title style="margin: 0;">
                 <span class="title" style="margin: 20px 0;display: block;">保存表信息（后续可直接导入）</span>
@@ -294,7 +316,7 @@
             <div class="content">
                 <span style="margin-bottom: 5px;display: block;color: var(--color-text-2);">注意，你提交的内容可能会被公开！</span>
                 <a-form :model="FieldData" @submit="saveField" :wrapper-col-props="{ span: 24, offset: -2 }">
-                    <a-form-item :rules="[{ required: true, message: '不能为空' }]" field="FieldTitle"
+                    <a-form-item :rules="[{ required: true, message: '不能为空' }]" field="title"
                         :label-col-style="{ transform: 'translateX(-40%)' }" :label="'名称'">
                         <a-input v-model="FieldData.title" placeholder="请输入名称" allow-clear />
                     </a-form-item>
@@ -303,7 +325,7 @@
                             :auto-size="{ minRows: 5, maxRows: 5 }" v-model="FieldData.data" />
                     </a-form-item>
                     <div class="inputBox" style="display: flex;gap: 10px;margin-top: 20px;">
-                        <a-button type="primary" html-type="submit">保存表</a-button>
+                        <a-button type="primary" html-type="submit">保存字段</a-button>
                         <a-button type="outline" @click="saveFieldWindow(saveFieldChoose)">重置</a-button>
                     </div>
                 </a-form>
@@ -345,7 +367,7 @@ const form = reactive<Table>({
 })
 const result = ref<{ buildSQL: string, insertSQL: string } | null>(null)
 const resultType = ref<'mysql' | 'sqlServer' | 'oracle'>('mysql')
-
+const formRef = ref<null | HTMLFormElement>(null);
 
 //--------------------------------------------公共功能--------------------------------------------
 const symbol = (n: number) => Symbol(n)
@@ -423,10 +445,15 @@ const removeField = (key: number) => {
 }
 
 //--------------------------------------------窗口功能--------------------------------------------
-const intelligentInputVisible = ref(false);
+import { completeField } from '@/utils/sqlcreate/completeField';
+import { completeTable } from '@/utils/sqlcreate/completeTable';
 const windowsData = reactive({
     intelligentInput: '',
+    importJSON: '',
 })
+
+// 智能导入
+const intelligentInputVisible = ref(false);
 const intelligentInputClick = () => {
     intelligentInputVisible.value = true;
 };
@@ -461,7 +488,48 @@ const intelligentInputOk = (data: {
     intelligentInputVisible.value = false;
 }
 
+// json
+const importJSONVisible = ref(false);
+const importJSONClick = () => {
+    importJSONVisible.value = true;
+}
+const importJSONOk = (data: {
+    values: Record<string, any>;
+    errors: Record<string, ValidatedError> | undefined;
+}): any => {
+    if (data.errors) return
+    const str: string = data.values.importJSON;
 
+    formRef.value && formRef.value.resetFields()
+    try {
+        // 假设completeTable是一个外部定义的函数，这里不对其实现进行修改
+        let completeForm = completeTable(JSON.parse(str));
+
+        // 检查completeForm及其属性是否存在，以避免运行时错误
+        if (completeForm && typeof completeForm === 'object') {
+            // 使用对象解构简化代码，并提高可读性
+            const { databaseName, tableName, num, tableComments, tableFields } = completeForm;
+
+            // 确保form对象的属性是从completeForm安全地赋值过来的
+            form.databaseName = databaseName;
+            form.tableName = tableName;
+            form.num = num;
+            form.tableComments = tableComments;
+
+            // 优化数组复制的过程，使用扩展运算符
+            form.tableFields = [];
+            form.tableFields.push(...tableFields);
+            console.log(completeForm);
+
+        }
+    } catch (error) {
+        // 异常处理：在这里可以根据需求进行不同的错误处理
+        tips('warning', 'JSON格式错误');
+        console.error("An error occurred while processing the form: ", error);
+    }
+    tips('success');
+    importJSONVisible.value = false;
+}
 
 //--------------------------------------------生成数据--------------------------------------------
 //生成myysql语句
@@ -602,7 +670,6 @@ import getCurrentDate from '@/utils/getCurrentDate';
 // 保存表
 import { saveTableApi } from '@/api/table/saveTable';
 const saveTablevisible = ref(false);
-const formRef = ref<null | HTMLFormElement>(null);
 const TableData = reactive({
     tableTitle: '',
     saveTableData: '',

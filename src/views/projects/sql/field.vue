@@ -3,13 +3,13 @@
         <div class="card">
             <div class="title">
                 <span>
-                    公开表信息
+                    公开字段信息
                 </span>
-                <a-button type="primary">创建表</a-button>
+                <a-button type="primary">创建字段</a-button>
             </div>
             <div class="content">
                 <!-- 搜索 -->
-                <a-input-search :style="{ width: '320px' }" placeholder="请输入表名" button-text="搜索" search-button
+                <a-input-search :style="{ width: '320px' }" placeholder="请输入字段名" button-text="搜索" search-button
                     class="search" @search="allTableSearch" />
 
                 <!-- 所有公开表信息 -->
@@ -33,16 +33,35 @@
                                 </template>
                                 <template #description>
                                     <a-row>
-                                        <a-col :span="12">
-                                            <div>表名：{{ item.name }}</div>
+                                        <a-col :span="8">
+                                            <div>字段名：{{ item.name }}</div>
                                         </a-col>
-                                        <a-col :span="12">
-                                            <div>表注释：{{ item.comment }}</div>
+                                        <a-col :span="8">
+                                            <div>字段类型：{{ item.type }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>默认值：{{ item.defaultValue }}</div>
                                         </a-col>
                                     </a-row>
-                                    <div>
-                                        <div>字段列表：{{ item.fieldList.join(', ') }}</div>
-                                    </div>
+                                    <a-row>
+                                        <a-col :span="8">
+                                            <div>注释：{{ item.comment }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>更新动作：{{ item.onUpdate }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>主键：{{ item.isPrimary }}</div>
+                                        </a-col>
+                                    </a-row>
+                                    <a-row>
+                                        <a-col :span="8">
+                                            <div>非空：{{ item.notNull }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>自增：{{ item.isAutoIncrement }}</div>
+                                        </a-col>
+                                    </a-row>
                                 </template>
                             </a-list-item-meta>
                         </a-list-item>
@@ -52,8 +71,8 @@
         </div>
         <div class="card">
             <div class="title">
-                <span>个人表</span>
-                <a-button type="primary">创建表</a-button>
+                <span>个人字段</span>
+                <a-button type="primary">创建字段</a-button>
             </div>
             <div class="content">
                 <!-- 搜索 -->
@@ -81,16 +100,35 @@
                                 </template>
                                 <template #description>
                                     <a-row>
-                                        <a-col :span="12">
-                                            <div>表名：{{ item.name }}</div>
+                                        <a-col :span="8">
+                                            <div>字段名：{{ item.name }}</div>
                                         </a-col>
-                                        <a-col :span="12">
-                                            <div>表注释：{{ item.comment }}</div>
+                                        <a-col :span="8">
+                                            <div>字段类型：{{ item.type }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>默认值：{{ item.defaultValue }}</div>
                                         </a-col>
                                     </a-row>
-                                    <div>
-                                        <div>字段列表：{{ item.fieldList.join(', ') }}</div>
-                                    </div>
+                                    <a-row>
+                                        <a-col :span="8">
+                                            <div>注释：{{ item.comment }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>更新动作：{{ item.onUpdate }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>主键：{{ item.isPrimary }}</div>
+                                        </a-col>
+                                    </a-row>
+                                    <a-row>
+                                        <a-col :span="8">
+                                            <div>非空：{{ item.notNull }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>自增：{{ item.isAutoIncrement }}</div>
+                                        </a-col>
+                                    </a-row>
                                 </template>
                             </a-list-item-meta>
                         </a-list-item>
@@ -104,41 +142,59 @@
 
 <script setup lang='ts'>
 import { onMounted, reactive, ref } from 'vue';
-
-interface TableData {
+import type { Field } from '@/types/interface';
+interface FieldData extends Field {
+    time: string,
     title: string,
-    name: string,
-    comment: string,
-    fieldList: string[],
-    time: string
-}
-const allTableData: TableData[] = reactive([])
-const ownselfTableData: TableData[] = reactive([])
+    userid: string,
+    tag: string
+}[]
+const allTableData: FieldData[] = reactive([])
+const ownselfTableData: FieldData[] = reactive([])
 
 // 获取表
-import { getTableApi } from '@/api/table/getTable';
-import type { Table } from '@/types/interface';
+import { getFieldApi } from '@/api/field/getField';
 onMounted(async () => {
-    const res = await getTableApi('');
+    const res = await getFieldApi('');
     const username = sessionStorage.getItem('username');
     res && res.forEach(item => {
-        const tableData: Table = JSON.parse(item.tableData);
+        const fieldData: Field = JSON.parse(item.fieldData);
 
         allTableData.push({
             title: item.title,
-            name: tableData.tableName,
-            comment: tableData.tableComments || 'null',
-            fieldList: tableData.tableFields.map(item => item.name),
-            time: item.time.split('T')[0]
+            name: fieldData.name,
+            type: fieldData.type,
+            defaultValue: fieldData.defaultValue || 'null',
+            isPrimary: fieldData.isPrimary,
+            notNull: fieldData.notNull,
+            isAutoIncrement: fieldData.isAutoIncrement,
+            onUpdate: fieldData.onUpdate || 'null',
+            comment: fieldData.comment || 'null',
+            fakeData: fieldData.fakeData,
+            fakeDataType: fieldData.fakeDataType,
+
+            time: item.time.split('T')[0],
+            userid: item.userid,
+            tag: item.tag,
         })
 
         if (item.userid === username) {
             ownselfTableData.push({
                 title: item.title,
-                name: tableData.tableName,
-                comment: tableData.tableComments,
-                fieldList: tableData.tableFields.map(item => item.name),
-                time: item.time.split('T')[0]
+                name: fieldData.name,
+                type: fieldData.type,
+                defaultValue: fieldData.defaultValue,
+                isPrimary: fieldData.isPrimary,
+                notNull: fieldData.notNull,
+                isAutoIncrement: fieldData.isAutoIncrement,
+                onUpdate: fieldData.onUpdate,
+                comment: fieldData.comment,
+                fakeData: fieldData.fakeData,
+                fakeDataType: fieldData.fakeDataType,
+
+                time: item.time.split('T')[0],
+                userid: item.userid,
+                tag: item.tag,
             })
         }
     })

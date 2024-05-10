@@ -48,13 +48,21 @@ let pages = [
                   headMenu: false,
                   asideMenu: true,
                 }
-              },
-              {
+              }, {
                 path: '/projects/sqlCreate/table',
                 name: 'table',
                 component: () => import('@/views/projects/sql/table.vue'),
                 meta: {
                   title: 'table 表',
+                  headMenu: false,
+                  asideMenu: true,
+                }
+              }, {
+                path: '/projects/sqlCreate/field',
+                name: 'field',
+                component: () => import('@/views/projects/sql/field.vue'),
+                meta: {
+                  title: 'field 字段',
                   headMenu: false,
                   asideMenu: true,
                 }

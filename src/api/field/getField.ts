@@ -4,11 +4,10 @@ import { tips } from '@/utils/tips';
 import BACKEND_URL from '@/config/backendUrl';
 import type { GetFieldReaponse } from '@/types/interface';
 
-export const getTableApi = async (userid: string) => {
+export const getFieldApi = async (userid: string) => {
     try {
         const data = { userid };
-        const reaponse: GetFieldReaponse = (await axios.post(`${BACKEND_URL}/sqlcreate/table/getTable`, data)).data;
-        // 保存成功
+        const reaponse: GetFieldReaponse = (await axios.post(`${BACKEND_URL}/sqlcreate/field/getField`, data)).data;
         if (reaponse.status) {
             tips('success', reaponse.message);
             return reaponse.data;
