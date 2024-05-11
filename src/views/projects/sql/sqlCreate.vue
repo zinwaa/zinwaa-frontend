@@ -447,6 +447,46 @@ const removeField = (key: number) => {
 //--------------------------------------------窗口功能--------------------------------------------
 import { completeField } from '@/utils/sqlcreate/completeField';
 import { completeTable } from '@/utils/sqlcreate/completeTable';
+const tableGeneration = (tableStr: string) => {
+    let completeForm = completeTable(JSON.parse(tableStr));
+
+    // 检查completeForm及其属性是否存在，以避免运行时错误
+    if (completeForm && typeof completeForm === 'object') {
+        // 使用对象解构简化代码，并提高可读性
+        const { databaseName, tableName, num, tableComments, tableFields } = completeForm;
+
+        // 确保form对象的属性是从completeForm安全地赋值过来的
+        form.databaseName = databaseName;
+        form.tableName = tableName;
+        form.num = num;
+        form.tableComments = tableComments;
+
+        // 优化数组复制的过程，使用扩展运算符
+        form.tableFields = tableFields;
+
+    }
+}
+const fieldGeneration = (fieldStr: string) => {
+    let completeForm = completeField(JSON.parse(fieldStr));
+
+    // 检查completeForm及其属性是否存在，以避免运行时错误
+    if (completeForm && typeof completeForm === 'object') {
+        // 使用对象解构简化代码，并提高可读性
+        const { name, type, defaultValue, comment, onUpdate, isPrimary, notNull, isAutoIncrement, fakeDataType, fakeData } = completeForm;
+        form.tableFields.push({
+            name: name,
+            type: type,
+            defaultValue: defaultValue,
+            comment: comment,
+            onUpdate: onUpdate,
+            isPrimary: isPrimary,
+            notNull: notNull,
+            isAutoIncrement: isAutoIncrement,
+            fakeDataType: fakeDataType,
+            fakeData: fakeData,
+        })
+    }
+}
 const windowsData = reactive({
     intelligentInput: '',
     importJSON: '',
@@ -502,26 +542,7 @@ const importJSONOk = (data: {
 
     formRef.value && formRef.value.resetFields()
     try {
-        // 假设completeTable是一个外部定义的函数，这里不对其实现进行修改
-        let completeForm = completeTable(JSON.parse(str));
-
-        // 检查completeForm及其属性是否存在，以避免运行时错误
-        if (completeForm && typeof completeForm === 'object') {
-            // 使用对象解构简化代码，并提高可读性
-            const { databaseName, tableName, num, tableComments, tableFields } = completeForm;
-
-            // 确保form对象的属性是从completeForm安全地赋值过来的
-            form.databaseName = databaseName;
-            form.tableName = tableName;
-            form.num = num;
-            form.tableComments = tableComments;
-
-            // 优化数组复制的过程，使用扩展运算符
-            form.tableFields = [];
-            form.tableFields.push(...tableFields);
-            console.log(completeForm);
-
-        }
+        tableGeneration(str)
     } catch (error) {
         // 异常处理：在这里可以根据需求进行不同的错误处理
         tips('warning', 'JSON格式错误');
@@ -618,35 +639,13 @@ const generateMySQLInsertStatement = (form: Table) => {
 
 
 //复制SQL语句
+import { copyText } from '@/utils/copytext';
 const insertSQL = ref<HTMLPreElement | null>(null);
 const buildSQL = ref<HTMLPreElement | null>(null);
 async function copySQL(copyDomRef: string) {
     const copyDom = copyDomRef === 'insertSQL' ? insertSQL.value : buildSQL.value;
     if (copyDom) {
-        // navigator clipboard 需要https等安全上下文
-        if (navigator.clipboard && window.isSecureContext) {
-            // navigator clipboard 向剪贴板写文本
-            tips('success', 'SQL 语句已复制到剪贴板')
-            return navigator.clipboard.writeText(copyDom.innerText);
-        } else {
-            // 创建text area
-            let textArea = document.createElement("textarea");
-            textArea.value = copyDom.innerText;
-            // 使text area不在viewport，同时设置不可见
-            textArea.style.position = "absolute";
-            textArea.style.opacity = '0';
-            textArea.style.left = "-999999px";
-            textArea.style.top = "-999999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            return new Promise((res, rej) => {
-                // 执行复制命令并移除文本框
-                tips('success', 'SQL 语句已复制到剪贴板')
-                document.execCommand('copy') ? res(null) : rej();
-                textArea.remove();
-            });
-        }
+        copyText(copyDom.innerText)
     } else {
         tips('warning', '请先生成语句')
     }
@@ -762,6 +761,21 @@ const saveField = (data: {
         saveFieldvisible.value = false;
     }
 };
+
+// --------------------------------------------sessionStorage--------------------------------------------
+onMounted(() => {
+    if (!sessionStorage.getItem('tableData') && !sessionStorage.getItem('fieldData')) return;
+    else if (sessionStorage.getItem('tableData')) {
+        tableGeneration((sessionStorage.getItem('tableData') as string));
+        sessionStorage.removeItem('tableData');
+        return;
+    } else {
+        form.tableFields = []
+        fieldGeneration((sessionStorage.getItem('fieldData') as string));
+        sessionStorage.removeItem('fieldData');
+        return;
+    }
+})
 
 </script>
 

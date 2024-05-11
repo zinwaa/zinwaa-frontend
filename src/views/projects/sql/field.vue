@@ -14,16 +14,16 @@
 
                 <!-- 所有公开表信息 -->
                 <a-list class="list-demo-action-layout" :bordered="false"
-                    :data="allTableData.filter(item => !allSearchValue || item.name.includes(allSearchValue))"
+                    :data="allTableData.filter(item => !allSearchValue || item.fieldData.name.includes(allSearchValue))"
                     :pagination-props="allTableDataPaginationProps" style="margin: 20px 0;">
                     <template #item="{ item }">
                         <a-list-item class="list-demo-item" action-layout="vertical">
                             <template #actions>
-                                <span>{{ item.time }}</span>
-                                <span>复制语句</span>
+                                <span style="cursor: default;">{{ item.time }}</span>
+                                <span @click="copyText(JSON.stringify(item.fieldData))">复制语句</span>
                             </template>
                             <template #extra>
-                                <a-button type="outline">导入</a-button>
+                                <a-button type="outline" @click="importField(item.fieldData)">导入</a-button>
                             </template>
                             <a-list-item-meta style="align-items: stretch;flex-direction: column;">
                                 <template #title>
@@ -34,32 +34,32 @@
                                 <template #description>
                                     <a-row>
                                         <a-col :span="8">
-                                            <div>字段名：{{ item.name }}</div>
+                                            <div>字段名：{{ item.fieldData.name }}</div>
                                         </a-col>
                                         <a-col :span="8">
-                                            <div>字段类型：{{ item.type }}</div>
+                                            <div>字段类型：{{ item.fieldData.type }}</div>
                                         </a-col>
                                         <a-col :span="8">
-                                            <div>默认值：{{ item.defaultValue }}</div>
-                                        </a-col>
-                                    </a-row>
-                                    <a-row>
-                                        <a-col :span="8">
-                                            <div>注释：{{ item.comment }}</div>
-                                        </a-col>
-                                        <a-col :span="8">
-                                            <div>更新动作：{{ item.onUpdate }}</div>
-                                        </a-col>
-                                        <a-col :span="8">
-                                            <div>主键：{{ item.isPrimary }}</div>
+                                            <div>默认值：{{ item.fieldData.defaultValue || 'null' }}</div>
                                         </a-col>
                                     </a-row>
                                     <a-row>
                                         <a-col :span="8">
-                                            <div>非空：{{ item.notNull }}</div>
+                                            <div>注释：{{ item.fieldData.comment }}</div>
                                         </a-col>
                                         <a-col :span="8">
-                                            <div>自增：{{ item.isAutoIncrement }}</div>
+                                            <div>更新动作：{{ item.fieldData.onUpdate || 'null' }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>主键：{{ item.fieldData.isPrimary }}</div>
+                                        </a-col>
+                                    </a-row>
+                                    <a-row>
+                                        <a-col :span="8">
+                                            <div>非空：{{ item.fieldData.notNull }}</div>
+                                        </a-col>
+                                        <a-col :span="8">
+                                            <div>自增：{{ item.fieldData.isAutoIncrement }}</div>
                                         </a-col>
                                     </a-row>
                                 </template>
@@ -81,16 +81,16 @@
 
                 <!-- 所有个人表信息 -->
                 <a-list class="list-demo-action-layout" :bordered="false"
-                    :data="ownselfTableData.filter(item => !ownselfSearchValue || item.name.includes(ownselfSearchValue))"
+                    :data="ownselfTableData.filter(item => !ownselfSearchValue || item.fieldData.name.includes(ownselfSearchValue))"
                     :pagination-props="ownselfTableDataPaginationProps" style="margin: 20px 0;">
                     <template #item="{ item }">
                         <a-list-item class="list-demo-item" action-layout="vertical">
                             <template #actions>
-                                <span>{{ item.time }}</span>
-                                <span>复制语句</span>
+                                <span style="cursor: default;">{{ item.time }}</span>
+                                <span @click="copyText(JSON.stringify(item.fieldData))">复制语句</span>
                             </template>
                             <template #extra>
-                                <a-button type="outline">导入</a-button>
+                                <a-button type="outline" @click="importField(item.fieldData)">导入</a-button>
                             </template>
                             <a-list-item-meta style="align-items: stretch;flex-direction: column;">
                                 <template #title>
@@ -143,11 +143,13 @@
 <script setup lang='ts'>
 import { onMounted, reactive, ref } from 'vue';
 import type { Field } from '@/types/interface';
-interface FieldData extends Field {
+import { copyText } from '@/utils/copytext';
+interface FieldData {
     time: string,
     title: string,
     userid: string,
-    tag: string
+    tag: string,
+    fieldData: Field
 }[]
 const allTableData: FieldData[] = reactive([])
 const ownselfTableData: FieldData[] = reactive([])
@@ -162,17 +164,7 @@ onMounted(async () => {
 
         allTableData.push({
             title: item.title,
-            name: fieldData.name,
-            type: fieldData.type,
-            defaultValue: fieldData.defaultValue || 'null',
-            isPrimary: fieldData.isPrimary,
-            notNull: fieldData.notNull,
-            isAutoIncrement: fieldData.isAutoIncrement,
-            onUpdate: fieldData.onUpdate || 'null',
-            comment: fieldData.comment || 'null',
-            fakeData: fieldData.fakeData,
-            fakeDataType: fieldData.fakeDataType,
-
+            fieldData,
             time: item.time.split('T')[0],
             userid: item.userid,
             tag: item.tag,
@@ -181,17 +173,7 @@ onMounted(async () => {
         if (item.userid === username) {
             ownselfTableData.push({
                 title: item.title,
-                name: fieldData.name,
-                type: fieldData.type,
-                defaultValue: fieldData.defaultValue,
-                isPrimary: fieldData.isPrimary,
-                notNull: fieldData.notNull,
-                isAutoIncrement: fieldData.isAutoIncrement,
-                onUpdate: fieldData.onUpdate,
-                comment: fieldData.comment,
-                fakeData: fieldData.fakeData,
-                fakeDataType: fieldData.fakeDataType,
-
+                fieldData,
                 time: item.time.split('T')[0],
                 userid: item.userid,
                 tag: item.tag,
@@ -217,6 +199,14 @@ const ownselfTableDataPaginationProps = reactive({
     defaultPageSize: 5,
     total: ownselfTableData.length
 })
+
+
+import { useRouter } from 'vue-router';
+const $router = useRouter();
+const importField = (fieldData: Field) => {
+    sessionStorage.setItem('fieldData', JSON.stringify(fieldData))
+    $router.push('/projects/sqlCreate/home')
+}
 </script>
 
 

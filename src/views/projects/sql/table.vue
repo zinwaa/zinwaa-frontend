@@ -19,11 +19,11 @@
                     <template #item="{ item }">
                         <a-list-item class="list-demo-item" action-layout="vertical">
                             <template #actions>
-                                <span>{{ item.time }}</span>
-                                <span>复制语句</span>
+                                <span style="cursor: default;">{{ item.time }}</span>
+                                <span @click="copyText(JSON.stringify(item.tableData))">复制语句</span>
                             </template>
                             <template #extra>
-                                <a-button type="outline">导入</a-button>
+                                <a-button type="outline" @click="importTable(item)">导入</a-button>
                             </template>
                             <a-list-item-meta style="align-items: stretch;flex-direction: column;">
                                 <template #title>
@@ -41,7 +41,8 @@
                                         </a-col>
                                     </a-row>
                                     <div>
-                                        <div>字段列表：{{ item.fieldList.join(', ') }}</div>
+                                        <div>字段列表：{{ item.tableData.tableFields.map((item: Field) =>
+                                            item.name).join(',') }}</div>
                                     </div>
                                 </template>
                             </a-list-item-meta>
@@ -67,11 +68,11 @@
                     <template #item="{ item }">
                         <a-list-item class="list-demo-item" action-layout="vertical">
                             <template #actions>
-                                <span>{{ item.time }}</span>
-                                <span>复制语句</span>
+                                <span style="cursor: default;">{{ item.time }}</span>
+                                <span @click="copyText(JSON.stringify(item.tableData))">复制语句</span>
                             </template>
                             <template #extra>
-                                <a-button type="outline">导入</a-button>
+                                <a-button type="outline" @click="importTable(item)">导入</a-button>
                             </template>
                             <a-list-item-meta style="align-items: stretch;flex-direction: column;">
                                 <template #title>
@@ -89,7 +90,9 @@
                                         </a-col>
                                     </a-row>
                                     <div>
-                                        <div>字段列表：{{ item.fieldList.join(', ') }}</div>
+                                        <div>字段列表：{{ item.tableData.tableFields.map((item: Field) =>
+                                            item.name).join(',') }}
+                                        </div>
                                     </div>
                                 </template>
                             </a-list-item-meta>
@@ -104,20 +107,20 @@
 
 <script setup lang='ts'>
 import { onMounted, reactive, ref } from 'vue';
-
+import type { Field, Table } from '@/types/interface';
+import { copyText } from '@/utils/copytext';
 interface TableData {
     title: string,
     name: string,
     comment: string,
-    fieldList: string[],
-    time: string
+    time: string,
+    tableData: Table
 }
 const allTableData: TableData[] = reactive([])
 const ownselfTableData: TableData[] = reactive([])
 
 // 获取表
 import { getTableApi } from '@/api/table/getTable';
-import type { Table } from '@/types/interface';
 onMounted(async () => {
     const res = await getTableApi('');
     const username = sessionStorage.getItem('username');
@@ -128,17 +131,17 @@ onMounted(async () => {
             title: item.title,
             name: tableData.tableName,
             comment: tableData.tableComments || 'null',
-            fieldList: tableData.tableFields.map(item => item.name),
-            time: item.time.split('T')[0]
+            time: item.time.split('T')[0],
+            tableData
         })
 
         if (item.userid === username) {
             ownselfTableData.push({
                 title: item.title,
                 name: tableData.tableName,
-                comment: tableData.tableComments,
-                fieldList: tableData.tableFields.map(item => item.name),
-                time: item.time.split('T')[0]
+                comment: tableData.tableComments || 'null',
+                time: item.time.split('T')[0],
+                tableData
             })
         }
     })
@@ -161,6 +164,14 @@ const ownselfTableDataPaginationProps = reactive({
     defaultPageSize: 5,
     total: ownselfTableData.length
 })
+
+
+import { useRouter } from 'vue-router';
+const $router = useRouter();
+const importTable = (item: TableData) => {
+    sessionStorage.setItem('tableData', JSON.stringify(item.tableData))
+    $router.push('/projects/sqlCreate/home')
+}
 </script>
 
 
